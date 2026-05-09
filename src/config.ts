@@ -304,27 +304,17 @@ export const profileConfig: ProfileConfig = {
 		{
 			name: "Bilibili",
 			icon: "fa7-brands:bilibili",
-			url: "https://space.bilibili.com/701864046",
-		},
-		{
-			name: "Gitee",
-			icon: "mdi:git",
-			url: "https://gitee.com/matsuzakayuki",
+			url: "https://space.bilibili.com/343181454",
 		},
 		{
 			name: "GitHub",
 			icon: "fa7-brands:github",
-			url: "https://github.com/matsuzaka-yuki",
-		},
-		{
-			name: "Codeberg",
-			icon: "simple-icons:codeberg",
-			url: "https://codeberg.org",
+			url: "https://github.com/zxykevin",
 		},
 		{
 			name: "Discord",
 			icon: "fa7-brands:discord",
-			url: "https://discord.gg/MqW6TcQtVM",
+			url: "https://discord.com/channels/1363226116097183927/1502796480048791573",
 		},
 	],
 };
