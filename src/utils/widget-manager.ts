@@ -12,6 +12,7 @@ export const WIDGET_COMPONENT_MAP = {
 	profile: "../components/widgets/profile/Profile.astro",
 	announcement: "../components/widgets/announcement/Announcement.astro",
 	categories: "../components/widgets/categories/Categories.astro",
+	"friend-links": "../components/widgets/friend-links/FriendLinks.astro",
 	tags: "../components/widgets/tags/Tags.astro",
 	toc: "../components/widgets/toc/TOC.astro",
 	"card-toc": "../components/widgets/card-toc/CardTOC.astro",

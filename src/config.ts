@@ -496,6 +496,16 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			animationDelay: 200,
 		},
 		{
+			// 组件类型：友情链接组件
+			type: "friend-links",
+			// 组件位置
+			position: "sticky",
+			// CSS 类名
+			class: "onload-animation",
+			// 动画延迟时间
+			animationDelay: 200,
+		},
+		{
 			// 组件类型：站点统计组件
 			type: "site-stats",
 			// 组件位置
@@ -520,13 +530,20 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 	// 侧栏组件布局配置
 	components: {
 		left: ["profile", "announcement", "tags", "card-toc"],
-		right: ["site-stats", "calendar", "categories", "music-sidebar"],
+		right: [
+			"site-stats",
+			"calendar",
+			"categories",
+			"music-sidebar",
+			"friend-links",
+		],
 		drawer: [
 			"profile",
 			"announcement",
 			"music-sidebar",
 			"categories",
 			"tags",
+			"friend-links",
 		],
 	},
 

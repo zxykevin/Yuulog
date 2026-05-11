@@ -368,6 +368,7 @@ export type WidgetComponentType =
 	| "profile"
 	| "announcement"
 	| "categories"
+	| "friend-links"
 	| "tags"
 	| "toc"
 	| "card-toc" // 卡片式目录组件
