@@ -1,100 +1,71 @@
-const ALLOWED_ORIGIN = "https://yuulog.org";
+const ORIGIN = "https://yuulog.org";
+const START_AT = Date.parse("2026-05-11T00:00:00.000Z");
 
-function jsonResponse(body, init = {}) {
-	const headers = new Headers(init.headers);
-	headers.set("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
-	headers.set("Access-Control-Allow-Methods", "GET, OPTIONS");
-	headers.set("Access-Control-Allow-Headers", "Content-Type");
-	headers.set("Cache-Control", "public, max-age=300");
-	headers.set("Content-Type", "application/json; charset=utf-8");
-
-	return new Response(JSON.stringify(body), {
-		...init,
-		headers,
-	});
+function json(body, init = {}) {
+	const h = new Headers(init.headers);
+	h.set("Access-Control-Allow-Origin", ORIGIN);
+	h.set("Access-Control-Allow-Methods", "GET, OPTIONS");
+	h.set("Access-Control-Allow-Headers", "Content-Type");
+	h.set("Cache-Control", "public, max-age=300");
+	h.set("Content-Type", "application/json; charset=utf-8");
+	return new Response(JSON.stringify(body), { ...init, headers: h });
 }
 
-function failedResponse() {
-	return jsonResponse({
-		ok: false,
-		views: null,
-		visitors: null,
-	});
+function fail() {
+	return json({ ok: false, views: null, visitors: null });
 }
 
 function normalizePath(path) {
-	if (!path || typeof path !== "string") {
-		return "/";
-	}
-
-	const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-	return normalizedPath;
+	if (!path) return "/";
+	return path.startsWith("/") ? path : `/${path}`;
 }
 
-function getStatsUrl(env) {
-	const apiBaseUrl = env.UMAMI_API_URL.replace(/\/$/, "");
-	const statsPath = apiBaseUrl.endsWith("/v1")
-		? `/websites/${env.UMAMI_WEBSITE_ID}/stats`
-		: `/api/websites/${env.UMAMI_WEBSITE_ID}/stats`;
-
-	return new URL(`${apiBaseUrl}${statsPath}`);
+function num(value) {
+	return Number(value?.value ?? value);
 }
 
 export default {
 	async fetch(request, env) {
-		if (request.method === "OPTIONS") {
-			return jsonResponse(null, { status: 204 });
-		}
-
-		if (request.method !== "GET") {
-			return jsonResponse(
-				{
-					ok: false,
-					views: null,
-					visitors: null,
-				},
-				{ status: 405 },
-			);
-		}
+		if (request.method === "OPTIONS") return json(null, { status: 204 });
+		if (request.method !== "GET") return fail();
 
 		try {
-			const requestUrl = new URL(request.url);
-			const path = normalizePath(requestUrl.searchParams.get("path"));
-			const umamiUrl = getStatsUrl(env);
+			const reqUrl = new URL(request.url);
+			const apiBase = env.UMAMI_API_URL.replace(/\/$/, "").replace(/\/v1$/, "");
+			const path = normalizePath(reqUrl.searchParams.get("path"));
+			const url = new URL(
+				`${apiBase}/v1/websites/${env.UMAMI_WEBSITE_ID}/stats`,
+			);
 
-			umamiUrl.searchParams.set("startAt", "0");
-			umamiUrl.searchParams.set("endAt", Date.now().toString());
+			url.searchParams.set(
+				"startAt",
+				reqUrl.searchParams.get("startAt") || String(START_AT),
+			);
+			url.searchParams.set("endAt", String(Date.now()));
 
 			if (path !== "/") {
-				umamiUrl.searchParams.set("path", path);
+				url.searchParams.set("path", path);
 			}
 
-			const response = await fetch(umamiUrl, {
+			const res = await fetch(url, {
 				headers: {
 					Accept: "application/json",
 					"x-umami-api-key": env.UMAMI_API_KEY,
 				},
 			});
+			if (!res.ok) return fail();
 
-			if (!response.ok) {
-				return failedResponse();
-			}
-
-			const stats = await response.json();
-			const views = Number(stats.pageviews);
-			const visitors = Number(stats.visitors);
+			const stats = await res.json();
+			const views = num(stats.pageviews ?? stats.views);
+			const visitors = num(stats.visitors);
 
 			if (!Number.isFinite(views) || !Number.isFinite(visitors)) {
-				return failedResponse();
+				return fail();
 			}
 
-			return jsonResponse({
-				ok: true,
-				views,
-				visitors,
-			});
+			return json({ ok: true, views, visitors });
 		} catch {
-			return failedResponse();
+			return fail();
 		}
 	},
 };
