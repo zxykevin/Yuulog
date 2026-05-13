@@ -64,29 +64,7 @@ export class FancyboxHandler {
 			return;
 		}
 
-		const commonConfig = getDefaultFancyboxConfig();
-		const instantPreviewConfig = {
-			...commonConfig,
-			on: {
-				...commonConfig.on,
-				ready: (api: FancyboxInstanceType) => {
-					this.upgradeActiveSlide(api);
-					this.preloadNeighborSlides(api);
-				},
-				"Carousel.change": (api: FancyboxInstanceType) => {
-					this.upgradeActiveSlide(api);
-					this.preloadNeighborSlides(api);
-				},
-				"Carousel.contentReady": (
-					api: FancyboxInstanceType,
-					_carousel: unknown,
-					slide: FancyboxSlideType,
-				) => {
-					this.upgradeSlide(slide);
-					this.preloadNeighborSlides(api);
-				},
-			},
-		};
+		const instantPreviewConfig = this.getInstantPreviewConfig();
 
 		this.Fancybox.bind(FANCYBOX_SELECTORS.albumImages, {
 			...instantPreviewConfig,
@@ -132,9 +110,102 @@ export class FancyboxHandler {
 
 				this.prepareInstantPreview(trigger);
 				this.preloadAroundTrigger(trigger);
+
+				if (this.openInstantPreview(trigger)) {
+					event.preventDefault();
+					event.stopImmediatePropagation();
+				}
 			},
 			{ capture: true, signal: this.clickController.signal },
 		);
+	}
+
+	private getInstantPreviewConfig() {
+		const commonConfig = getDefaultFancyboxConfig();
+
+		return {
+			...commonConfig,
+			on: {
+				...commonConfig.on,
+				ready: (api: FancyboxInstanceType) => {
+					this.upgradeActiveSlide(api);
+					this.preloadNeighborSlides(api);
+				},
+				"Carousel.change": (api: FancyboxInstanceType) => {
+					this.upgradeActiveSlide(api);
+					this.preloadNeighborSlides(api);
+				},
+				"Carousel.contentReady": (
+					api: FancyboxInstanceType,
+					_carousel: unknown,
+					slide: FancyboxSlideType,
+				) => {
+					this.upgradeSlide(slide);
+					this.preloadNeighborSlides(api);
+				},
+			},
+		};
+	}
+
+	private openInstantPreview(trigger: HTMLElement): boolean {
+		if (!this.Fancybox) {
+			return false;
+		}
+
+		const group = this.getPreviewGroup(trigger);
+		const startIndex = group.indexOf(trigger);
+
+		if (startIndex === -1) {
+			return false;
+		}
+
+		const slides = group.map((item) => {
+			this.prepareInstantPreview(item);
+			const image = this.getTriggerImage(item);
+			const instantSrc = this.getInstantSrc(image, item);
+
+			return {
+				src: instantSrc,
+				type: "image",
+				thumb: instantSrc,
+				triggerEl: item,
+				caption: item.dataset.caption || image?.alt || "",
+			};
+		});
+
+		this.Fancybox.show(slides, {
+			...this.getInstantPreviewConfig(),
+			startIndex,
+			triggerEl: trigger,
+			Carousel: {
+				transition: "slide",
+				preload: 1,
+			},
+		});
+
+		return true;
+	}
+
+	private getPreviewGroup(trigger: HTMLElement): HTMLElement[] {
+		const groupName = trigger.getAttribute("data-fancybox");
+
+		if (groupName) {
+			return Array.from(
+				document.querySelectorAll<HTMLElement>(
+					`[data-fancybox="${CSS.escape(groupName)}"]`,
+				),
+			);
+		}
+
+		if (trigger.matches(FANCYBOX_SELECTORS.albumImages)) {
+			return Array.from(
+				document.querySelectorAll<HTMLElement>(
+					FANCYBOX_SELECTORS.albumImages,
+				),
+			);
+		}
+
+		return [trigger];
 	}
 
 	private prepareInstantPreview(trigger: HTMLElement): void {
@@ -250,17 +321,7 @@ export class FancyboxHandler {
 	}
 
 	private preloadAroundTrigger(trigger: HTMLElement): void {
-		const groupName = trigger.getAttribute("data-fancybox");
-
-		if (!groupName) {
-			return;
-		}
-
-		const group = Array.from(
-			document.querySelectorAll<HTMLElement>(
-				`[data-fancybox="${CSS.escape(groupName)}"]`,
-			),
-		);
+		const group = this.getPreviewGroup(trigger);
 		const index = group.indexOf(trigger);
 
 		if (index === -1) {
