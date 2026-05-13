@@ -18,13 +18,11 @@ const FANCYBOX_CLICK_SELECTOR =
 
 export class FancyboxHandler {
 	private Fancybox: FancyboxType | null = null;
-	private fancyboxLoadPromise: Promise<void> | null = null;
 	private boundSelectors: string[] = [];
 	private initialized = false;
 	private clickController: AbortController | null = null;
 	private preloadedUrls = new Set<string>();
 	private preparedTriggers = new WeakSet<HTMLElement>();
-	private pendingOverlay: HTMLElement | null = null;
 
 	async init(): Promise<void> {
 		const hasImages = this.checkForImages();
@@ -33,13 +31,17 @@ export class FancyboxHandler {
 			return;
 		}
 
-		this.cleanup();
-		this.markPreviewTriggers();
+		if (!this.Fancybox) {
+			await this.loadFancybox();
+		}
+
 		this.bindInstantPreviewCapture();
 
-		void this.ensureFancyboxLoaded().then(() => {
-			this.bindImageSelectors();
-		});
+		if (this.boundSelectors.length > 0) {
+			return;
+		}
+
+		this.bindImageSelectors();
 		this.initialized = true;
 	}
 
@@ -57,20 +59,8 @@ export class FancyboxHandler {
 		await import("@fancyapps/ui/dist/fancybox/fancybox.css");
 	}
 
-	private ensureFancyboxLoaded(): Promise<void> {
-		if (this.Fancybox) {
-			return Promise.resolve();
-		}
-
-		this.fancyboxLoadPromise ??= this.loadFancybox().finally(() => {
-			this.fancyboxLoadPromise = null;
-		});
-
-		return this.fancyboxLoadPromise;
-	}
-
 	private bindImageSelectors(): void {
-		if (!this.Fancybox || this.boundSelectors.length > 0) {
+		if (!this.Fancybox) {
 			return;
 		}
 
@@ -101,6 +91,10 @@ export class FancyboxHandler {
 	}
 
 	private bindInstantPreviewCapture(): void {
+		if (this.clickController) {
+			return;
+		}
+
 		this.clickController = new AbortController();
 		document.addEventListener(
 			"click",
@@ -114,47 +108,16 @@ export class FancyboxHandler {
 					return;
 				}
 
-				event.preventDefault();
-				event.stopPropagation();
 				this.prepareInstantPreview(trigger);
 				this.preloadAroundTrigger(trigger);
 
-				if (this.Fancybox && this.openInstantPreview(trigger)) {
+				if (this.openInstantPreview(trigger)) {
+					event.preventDefault();
 					event.stopImmediatePropagation();
-					return;
 				}
-
-				this.showPendingOverlay(trigger);
-				void this.ensureFancyboxLoaded().then(() => {
-					this.removePendingOverlay();
-					this.bindImageSelectors();
-					this.openInstantPreview(trigger);
-				});
-				event.stopImmediatePropagation();
 			},
 			{ capture: true, signal: this.clickController.signal },
 		);
-	}
-
-	private markPreviewTriggers(): void {
-		document
-			.querySelectorAll<HTMLElement>(FANCYBOX_CLICK_SELECTOR)
-			.forEach((trigger) => {
-				trigger.setAttribute("data-no-swup", "");
-				trigger.setAttribute("data-fancybox-trigger", "");
-				trigger.style.viewTransitionName = "none";
-
-				const anchor =
-					trigger instanceof HTMLAnchorElement
-						? trigger
-						: trigger.closest<HTMLAnchorElement>("a");
-
-				if (anchor) {
-					anchor.setAttribute("data-no-swup", "");
-					anchor.setAttribute("rel", "noopener nofollow");
-					anchor.style.viewTransitionName = "none";
-				}
-			});
 	}
 
 	private getInstantPreviewConfig() {
@@ -262,16 +225,8 @@ export class FancyboxHandler {
 			trigger.dataset.fullSrc = fullSrc;
 		}
 
-		trigger.setAttribute("data-no-swup", "");
-		trigger.style.viewTransitionName = "none";
 		trigger.dataset.instantSrc = instantSrc;
 		trigger.setAttribute("data-src", instantSrc);
-
-		const anchor =
-			trigger instanceof HTMLAnchorElement
-				? trigger
-				: trigger.closest<HTMLAnchorElement>("a");
-		anchor?.setAttribute("data-no-swup", "");
 
 		if (!trigger.getAttribute("data-thumb")) {
 			trigger.setAttribute("data-thumb", instantSrc);
@@ -293,9 +248,9 @@ export class FancyboxHandler {
 		trigger: HTMLElement,
 	): string {
 		return (
-			trigger.dataset.instantSrc ||
 			image?.currentSrc ||
 			image?.src ||
+			trigger.dataset.instantSrc ||
 			trigger.dataset.src ||
 			trigger.getAttribute("href") ||
 			""
@@ -432,57 +387,17 @@ export class FancyboxHandler {
 		image.src = src;
 	}
 
-	private showPendingOverlay(trigger: HTMLElement): void {
-		const image = this.getTriggerImage(trigger);
-		const instantSrc = this.getInstantSrc(image, trigger);
-
-		if (!instantSrc) {
+	cleanup(): void {
+		if (!this.Fancybox) {
 			return;
 		}
 
-		this.removePendingOverlay();
-
-		const overlay = document.createElement("div");
-		overlay.className = "mizuki-lightbox-pending";
-		overlay.setAttribute("role", "dialog");
-		overlay.setAttribute("aria-modal", "true");
-
-		const preview = document.createElement("img");
-		preview.src = instantSrc;
-		preview.alt = image?.alt || trigger.dataset.caption || "";
-		preview.decoding = "async";
-
-		overlay.append(preview);
-		overlay.addEventListener("click", () => {
-			this.removePendingOverlay();
+		this.boundSelectors.forEach((selector) => {
+			this.Fancybox.unbind(selector);
 		});
-		document.body.append(overlay);
-		this.pendingOverlay = overlay;
-	}
-
-	private removePendingOverlay(): void {
-		this.pendingOverlay?.remove();
-		this.pendingOverlay = null;
-	}
-
-	cleanup(): void {
-		this.removePendingOverlay();
-		if (this.Fancybox) {
-			const selectors = new Set([
-				...this.boundSelectors,
-				FANCYBOX_SELECTORS.albumImages,
-				FANCYBOX_SELECTORS.albumLinks,
-				FANCYBOX_SELECTORS.singleFancybox,
-			]);
-
-			selectors.forEach((selector) => {
-				this.Fancybox.unbind(selector);
-			});
-		}
 		this.boundSelectors = [];
 		this.clickController?.abort();
 		this.clickController = null;
-		this.initialized = false;
 	}
 
 	destroy(): void {
