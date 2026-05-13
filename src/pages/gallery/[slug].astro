@@ -82,10 +82,10 @@ const optimizedPhotos = await Promise.all(
 						<button
 							class="photo-button"
 							type="button"
-							data-lightbox-src={photo.lightbox.src}
-							data-lightbox-alt={photo.alt}
-							data-lightbox-caption={photo.caption}
-							data-lightbox-camera={photo.camera ?? ""}
+							data-fancybox={`gallery-${gallery.slug}`}
+							data-src={photo.lightbox.src}
+							data-type="image"
+							data-caption={photo.caption}
 							aria-label={`放大查看：${photo.alt}`}
 						>
 							<Image
@@ -108,146 +108,6 @@ const optimizedPhotos = await Promise.all(
 			}
 		</div>
 	</article>
-
-	<div class="gallery-lightbox" data-gallery-lightbox hidden aria-hidden="true">
-		<button
-			class="gallery-lightbox-close"
-			type="button"
-			aria-label="关闭图片预览"
-			data-lightbox-close
-		>
-			<Icon
-				name="material-symbols:close"
-				class="gallery-lightbox-close-icon"
-			/>
-		</button>
-		<div class="gallery-lightbox-stage" data-lightbox-stage></div>
-	</div>
-
-	<script>
-		type GalleryLightboxElement = HTMLElement & {
-			__galleryAbortController?: AbortController;
-		};
-
-		type ActivePhoto = {
-			src: string;
-			alt: string;
-		};
-
-		const initGalleryDetail = () => {
-			const lightbox = document.querySelector<GalleryLightboxElement>(
-				"[data-gallery-lightbox]",
-			);
-			const lightboxStage = lightbox?.querySelector<HTMLElement>(
-				"[data-lightbox-stage]",
-			);
-			const closeButton = document.querySelector<HTMLButtonElement>(
-				"[data-lightbox-close]",
-			);
-
-			if (!lightbox || !lightboxStage) {
-				return;
-			}
-
-			if (lightbox.parentElement !== document.body) {
-				document.body.append(lightbox);
-			}
-
-			lightbox.__galleryAbortController?.abort();
-
-			const controller = new AbortController();
-			lightbox.__galleryAbortController = controller;
-			const { signal } = controller;
-			let activePhoto: ActivePhoto | null = null;
-
-			const renderLightbox = () => {
-				lightboxStage.replaceChildren();
-
-				if (!activePhoto) {
-					lightbox.hidden = true;
-					lightbox.setAttribute("aria-hidden", "true");
-					document.documentElement.classList.remove(
-						"gallery-lightbox-open",
-					);
-					return;
-				}
-
-				const previewImage = document.createElement("img");
-				previewImage.src = activePhoto.src;
-				previewImage.alt = activePhoto.alt;
-				previewImage.decoding = "async";
-				previewImage.addEventListener(
-					"click",
-					(event) => {
-						event.stopPropagation();
-					},
-					{ signal },
-				);
-
-				lightboxStage.append(previewImage);
-				lightbox.hidden = false;
-				lightbox.setAttribute("aria-hidden", "false");
-				document.documentElement.classList.add(
-					"gallery-lightbox-open",
-				);
-			};
-
-			const closeLightbox = () => {
-				activePhoto = null;
-				renderLightbox();
-			};
-
-			document
-				.querySelectorAll<HTMLButtonElement>("[data-lightbox-src]")
-				.forEach((button) => {
-					button.onclick = () => {
-						const src = button.dataset.lightboxSrc;
-						if (!src) {
-							return;
-						}
-
-						activePhoto = {
-							src,
-							alt: button.dataset.lightboxAlt ?? "",
-						};
-						renderLightbox();
-					};
-				});
-
-			closeButton?.addEventListener(
-				"click",
-				(event) => {
-					event.preventDefault();
-					event.stopPropagation();
-					closeLightbox();
-				},
-				{ signal },
-			);
-			lightbox.addEventListener("click", closeLightbox, { signal });
-			document.addEventListener(
-				"keydown",
-				(event) => {
-					if (
-						event.key === "Escape" &&
-						lightbox.getAttribute("aria-hidden") === "false"
-					) {
-						closeLightbox();
-					}
-				},
-				{ signal },
-			);
-		};
-
-		if (document.readyState === "loading") {
-			document.addEventListener("DOMContentLoaded", initGalleryDetail, {
-				once: true,
-			});
-		} else {
-			initGalleryDetail();
-		}
-
-		document.addEventListener("astro:page-load", initGalleryDetail);
-	</script>
 </MainGridLayout>
 
 <style>
@@ -440,67 +300,6 @@ const optimizedPhotos = await Promise.all(
 		font-style: normal;
 	}
 
-	.gallery-lightbox {
-		position: fixed;
-		inset: 0;
-		width: 100vw;
-		height: 100vh;
-		z-index: 9999;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: rgba(0, 0, 0, 0.75);
-		backdrop-filter: blur(12px);
-		-webkit-backdrop-filter: blur(12px);
-		view-transition-name: none;
-	}
-
-	.gallery-lightbox[hidden] {
-		display: none;
-	}
-
-	.gallery-lightbox-stage {
-		display: contents;
-		view-transition-name: none;
-	}
-
-	.gallery-lightbox-stage img {
-		display: block;
-		max-width: 92vw;
-		max-height: 86vh;
-		width: auto;
-		height: auto;
-		object-fit: contain;
-		border-radius: 16px;
-		view-transition-name: none;
-	}
-
-	.gallery-lightbox-close {
-		position: fixed;
-		top: max(1rem, env(safe-area-inset-top));
-		right: max(1rem, env(safe-area-inset-right));
-		display: grid;
-		width: 2.75rem;
-		height: 2.75rem;
-		place-items: center;
-		border: 1px solid rgba(217, 239, 255, 0.2);
-		border-radius: 999px;
-		background: rgba(255, 255, 255, 0.13);
-		color: white;
-		box-shadow: 0 14px 42px rgba(0, 0, 0, 0.28);
-		backdrop-filter: blur(16px);
-		-webkit-backdrop-filter: blur(16px);
-		transition: background 180ms ease;
-	}
-
-	.gallery-lightbox-close:hover {
-		background: rgba(255, 255, 255, 0.2);
-	}
-
-	.gallery-lightbox-close-icon {
-		font-size: 1.35rem;
-	}
-
 	@media (min-width: 720px) {
 		.photo-grid {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -515,8 +314,7 @@ const optimizedPhotos = await Promise.all(
 
 	@media (max-width: 640px) {
 		.gallery-detail,
-		.photo-card,
-		.gallery-lightbox-stage img {
+		.photo-card {
 			border-radius: 1rem;
 		}
 	}
@@ -526,9 +324,5 @@ const optimizedPhotos = await Promise.all(
 		.photo-button img {
 			transition: none;
 		}
-	}
-
-	:global(html.gallery-lightbox-open) {
-		overflow: hidden;
 	}
 </style>
