@@ -1,6 +1,7 @@
 /**
- * Fancybox 处理器
- * 管理图片灯箱的初始化和清理
+ * Fancybox handler.
+ * Loads the viewer, binds image selectors, and upgrades previews from the
+ * already-loaded thumbnail to the larger source after the overlay is open.
  */
 
 import {
@@ -8,22 +9,21 @@ import {
 	getDefaultFancyboxConfig,
 } from "../core/swup-config";
 
-// Fancybox 模块类型
 type FancyboxType = any;
+type FancyboxInstanceType = any;
+type FancyboxSlideType = any;
 
-/**
- * Fancybox 处理器类
- * 负责图片灯箱的按需加载和管理
- */
+const FANCYBOX_CLICK_SELECTOR =
+	`${FANCYBOX_SELECTORS.albumImages}, ${FANCYBOX_SELECTORS.albumLinks}, ${FANCYBOX_SELECTORS.singleFancybox}`;
+
 export class FancyboxHandler {
 	private Fancybox: FancyboxType | null = null;
 	private boundSelectors: string[] = [];
 	private initialized = false;
+	private clickController: AbortController | null = null;
+	private preloadedUrls = new Set<string>();
+	private preparedTriggers = new WeakSet<HTMLElement>();
 
-	/**
-	 * 初始化 Fancybox
-	 * 按需加载 Fancybox 模块和样式
-	 */
 	async init(): Promise<void> {
 		const hasImages = this.checkForImages();
 
@@ -31,12 +31,12 @@ export class FancyboxHandler {
 			return;
 		}
 
-		// 按需加载 Fancybox 模块
 		if (!this.Fancybox) {
 			await this.loadFancybox();
 		}
 
-		// 避免重复初始化
+		this.bindInstantPreviewCapture();
+
 		if (this.boundSelectors.length > 0) {
 			return;
 		}
@@ -45,9 +45,6 @@ export class FancyboxHandler {
 		this.initialized = true;
 	}
 
-	/**
-	 * 检查页面是否有需要 Fancybox 的图片
-	 */
 	private checkForImages(): boolean {
 		return (
 			document.querySelector(FANCYBOX_SELECTORS.albumImages) !== null ||
@@ -56,54 +53,279 @@ export class FancyboxHandler {
 		);
 	}
 
-	/**
-	 * 加载 Fancybox 模块和样式
-	 */
 	private async loadFancybox(): Promise<void> {
 		const mod = await import("@fancyapps/ui");
 		this.Fancybox = mod.Fancybox;
 		await import("@fancyapps/ui/dist/fancybox/fancybox.css");
 	}
 
-	/**
-	 * 绑定图片选择器
-	 */
 	private bindImageSelectors(): void {
 		if (!this.Fancybox) {
 			return;
 		}
 
 		const commonConfig = getDefaultFancyboxConfig();
-
-		// 绑定相册/文章图片
-		this.Fancybox.bind(FANCYBOX_SELECTORS.albumImages, {
+		const instantPreviewConfig = {
 			...commonConfig,
+			on: {
+				...commonConfig.on,
+				ready: (api: FancyboxInstanceType) => {
+					this.upgradeActiveSlide(api);
+					this.preloadNeighborSlides(api);
+				},
+				"Carousel.change": (api: FancyboxInstanceType) => {
+					this.upgradeActiveSlide(api);
+					this.preloadNeighborSlides(api);
+				},
+				"Carousel.contentReady": (
+					api: FancyboxInstanceType,
+					_carousel: unknown,
+					slide: FancyboxSlideType,
+				) => {
+					this.upgradeSlide(slide);
+					this.preloadNeighborSlides(api);
+				},
+			},
+		};
+
+		this.Fancybox.bind(FANCYBOX_SELECTORS.albumImages, {
+			...instantPreviewConfig,
 			groupAll: true,
 			Carousel: {
 				transition: "slide",
-				preload: 2,
+				preload: 1,
 			},
 		});
 		this.boundSelectors.push(FANCYBOX_SELECTORS.albumImages);
 
-		// 绑定相册链接
 		this.Fancybox.bind(FANCYBOX_SELECTORS.albumLinks, {
-			...commonConfig,
-			source: (el: any) => {
-				return el.getAttribute("data-src") || el.getAttribute("href");
-			},
+			...instantPreviewConfig,
+			source: (el: HTMLElement) =>
+				el.getAttribute("data-src") || el.getAttribute("href"),
 		});
 		this.boundSelectors.push(FANCYBOX_SELECTORS.albumLinks);
 
-		// 绑定单独的 fancybox 图片
-		this.Fancybox.bind(FANCYBOX_SELECTORS.singleFancybox, commonConfig);
+		this.Fancybox.bind(
+			FANCYBOX_SELECTORS.singleFancybox,
+			instantPreviewConfig,
+		);
 		this.boundSelectors.push(FANCYBOX_SELECTORS.singleFancybox);
 	}
 
-	/**
-	 * 清理 Fancybox 绑定
-	 * 在页面切换前调用
-	 */
+	private bindInstantPreviewCapture(): void {
+		if (this.clickController) {
+			return;
+		}
+
+		this.clickController = new AbortController();
+		document.addEventListener(
+			"click",
+			(event) => {
+				const target = event.target as Element | null;
+				const trigger = target?.closest<HTMLElement>(
+					FANCYBOX_CLICK_SELECTOR,
+				);
+
+				if (!trigger) {
+					return;
+				}
+
+				this.prepareInstantPreview(trigger);
+				this.preloadAroundTrigger(trigger);
+			},
+			{ capture: true, signal: this.clickController.signal },
+		);
+	}
+
+	private prepareInstantPreview(trigger: HTMLElement): void {
+		if (this.preparedTriggers.has(trigger)) {
+			return;
+		}
+
+		const image = this.getTriggerImage(trigger);
+		const instantSrc = this.getInstantSrc(image, trigger);
+		const fullSrc = this.getFullSrc(trigger, image);
+
+		if (!instantSrc) {
+			return;
+		}
+
+		if (fullSrc && !trigger.dataset.fullSrc) {
+			trigger.dataset.fullSrc = fullSrc;
+		}
+
+		trigger.dataset.instantSrc = instantSrc;
+		trigger.setAttribute("data-src", instantSrc);
+
+		if (!trigger.getAttribute("data-thumb")) {
+			trigger.setAttribute("data-thumb", instantSrc);
+		}
+
+		this.preparedTriggers.add(trigger);
+	}
+
+	private getTriggerImage(trigger: HTMLElement): HTMLImageElement | null {
+		if (trigger instanceof HTMLImageElement) {
+			return trigger;
+		}
+
+		return trigger.querySelector<HTMLImageElement>("img");
+	}
+
+	private getInstantSrc(
+		image: HTMLImageElement | null,
+		trigger: HTMLElement,
+	): string {
+		return (
+			image?.currentSrc ||
+			image?.src ||
+			trigger.dataset.instantSrc ||
+			trigger.dataset.src ||
+			trigger.getAttribute("href") ||
+			""
+		);
+	}
+
+	private getFullSrc(
+		trigger: HTMLElement,
+		image: HTMLImageElement | null,
+	): string {
+		return (
+			trigger.dataset.fullSrc ||
+			trigger.dataset.src ||
+			trigger.getAttribute("href") ||
+			image?.src ||
+			image?.currentSrc ||
+			""
+		);
+	}
+
+	private upgradeActiveSlide(api: FancyboxInstanceType): void {
+		const slide = api?.getSlide?.();
+
+		if (slide) {
+			this.upgradeSlide(slide);
+		}
+	}
+
+	private upgradeSlide(slide: FancyboxSlideType): void {
+		const trigger = this.getSlideTrigger(slide);
+		const fullSrc = trigger?.dataset.fullSrc;
+
+		if (!fullSrc || slide.__mizukiFullSrc === fullSrc) {
+			return;
+		}
+
+		slide.__mizukiFullSrc = fullSrc;
+		this.preloadImage(fullSrc, () => {
+			const preview = this.getSlideImage(slide);
+
+			if (!preview || preview.src === fullSrc) {
+				return;
+			}
+
+			preview.classList.add("is-upgrading");
+			preview.src = fullSrc;
+			preview.removeAttribute("srcset");
+			window.setTimeout(() => {
+				preview.classList.remove("is-upgrading");
+			}, 180);
+		});
+	}
+
+	private preloadNeighborSlides(api: FancyboxInstanceType): void {
+		const carousel = api?.getCarousel?.();
+		const slides = carousel?.getSlides?.() || carousel?.slides || [];
+		const page = carousel?.page ?? carousel?.getPage?.()?.index ?? 0;
+
+		[page - 1, page + 1].forEach((index) => {
+			const slide = slides[index];
+			const trigger = this.getSlideTrigger(slide);
+			const fullSrc = trigger?.dataset.fullSrc;
+
+			if (fullSrc) {
+				this.preloadImage(fullSrc);
+			}
+		});
+	}
+
+	private preloadAroundTrigger(trigger: HTMLElement): void {
+		const groupName = trigger.getAttribute("data-fancybox");
+
+		if (!groupName) {
+			return;
+		}
+
+		const group = Array.from(
+			document.querySelectorAll<HTMLElement>(
+				`[data-fancybox="${CSS.escape(groupName)}"]`,
+			),
+		);
+		const index = group.indexOf(trigger);
+
+		if (index === -1) {
+			return;
+		}
+
+		[index - 1, index + 1].forEach((neighborIndex) => {
+			const neighbor = group[neighborIndex];
+
+			if (!neighbor) {
+				return;
+			}
+
+			this.prepareInstantPreview(neighbor);
+			const fullSrc = this.getFullSrc(
+				neighbor,
+				this.getTriggerImage(neighbor),
+			);
+
+			if (fullSrc) {
+				this.preloadImage(fullSrc);
+			}
+		});
+	}
+
+	private getSlideTrigger(
+		slide: FancyboxSlideType | undefined,
+	): HTMLElement | null {
+		return (
+			slide?.triggerEl ||
+			slide?.delegateEl ||
+			slide?.thumbEl ||
+			null
+		);
+	}
+
+	private getSlideImage(
+		slide: FancyboxSlideType,
+	): HTMLImageElement | null {
+		return (
+			slide?.htmlEl?.querySelector?.("img") ||
+			slide?.el?.querySelector?.("img") ||
+			null
+		);
+	}
+
+	private preloadImage(src: string, onload?: () => void): void {
+		if (!src) {
+			return;
+		}
+
+		if (this.preloadedUrls.has(src)) {
+			onload?.();
+			return;
+		}
+
+		const image = new Image();
+		image.decoding = "async";
+		image.onload = () => {
+			this.preloadedUrls.add(src);
+			onload?.();
+		};
+		image.src = src;
+	}
+
 	cleanup(): void {
 		if (!this.Fancybox) {
 			return;
@@ -113,38 +335,27 @@ export class FancyboxHandler {
 			this.Fancybox.unbind(selector);
 		});
 		this.boundSelectors = [];
+		this.clickController?.abort();
+		this.clickController = null;
 	}
 
-	/**
-	 * 完全销毁 Fancybox
-	 */
 	destroy(): void {
 		this.cleanup();
 		this.Fancybox = null;
 		this.initialized = false;
 	}
 
-	/**
-	 * 获取初始化状态
-	 */
 	isInitialized(): boolean {
 		return this.initialized;
 	}
 
-	/**
-	 * 获取已绑定的选择器列表
-	 */
 	getBoundSelectors(): string[] {
 		return [...this.boundSelectors];
 	}
 }
 
-// 创建全局实例
 let globalFancyboxHandler: FancyboxHandler | null = null;
 
-/**
- * 获取全局 Fancybox 处理器实例
- */
 export function getFancyboxHandler(): FancyboxHandler {
 	if (!globalFancyboxHandler) {
 		globalFancyboxHandler = new FancyboxHandler();
@@ -152,17 +363,11 @@ export function getFancyboxHandler(): FancyboxHandler {
 	return globalFancyboxHandler;
 }
 
-/**
- * 初始化 Fancybox（便捷函数）
- */
 export async function initFancybox(): Promise<void> {
 	const handler = getFancyboxHandler();
 	await handler.init();
 }
 
-/**
- * 清理 Fancybox（便捷函数）
- */
 export function cleanupFancybox(): void {
 	if (globalFancyboxHandler) {
 		globalFancyboxHandler.cleanup();

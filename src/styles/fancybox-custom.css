@@ -4,6 +4,42 @@
   --fancybox-thumbs-width: 64px;
   --fancybox-thumbs-ratio: 1;
   --fancybox-thumbs-border-radius: 4px;
+  animation-duration: 180ms;
+  transition-duration: 180ms;
+}
+
+.fancybox-fade-in {
+  animation: fancybox-fade-in 180ms ease-out both;
+}
+
+.fancybox-fade-out {
+  animation: fancybox-fade-out 150ms ease-in both;
+}
+
+.fancybox__content img {
+  transition: opacity 180ms ease;
+}
+
+.fancybox__content img.is-upgrading {
+  opacity: 0.82;
+}
+
+@keyframes fancybox-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fancybox-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 .fancybox__toolbar {
@@ -39,7 +75,9 @@
   border-radius: 4px;
   overflow: hidden;
   border: 2px solid transparent;
-  transition: all 0.2s ease;
+  transition:
+    border-color 180ms ease,
+    transform 180ms ease;
 }
 
 .fancybox__thumb.is-loading {
@@ -61,7 +99,10 @@
   border-radius: 50%;
   width: 44px;
   height: 44px;
-  transition: all 0.2s ease;
+  transition:
+    background 180ms ease,
+    transform 180ms ease,
+    border-color 180ms ease;
   backdrop-filter: blur(4px);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -117,5 +158,19 @@
 
   .fancybox__thumbs {
     --fancybox-thumbs-width: 40px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fancybox-fade-in,
+  .fancybox-fade-out {
+    animation: none;
+  }
+
+  .fancybox__container,
+  .fancybox__content img,
+  .fancybox__thumb,
+  .fancybox__button {
+    transition: none;
   }
 }
