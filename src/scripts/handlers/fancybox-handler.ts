@@ -22,6 +22,7 @@ export class FancyboxHandler {
 	private boundSelectors: string[] = [];
 	private initialized = false;
 	private clickController: AbortController | null = null;
+	private loadPromise: Promise<void> | null = null;
 	private preloadedUrls = new Set<string>();
 	private preparedTriggers = new WeakSet<HTMLElement>();
 
@@ -32,13 +33,10 @@ export class FancyboxHandler {
 			return;
 		}
 
-		if (!this.Fancybox) {
-			await this.loadFancybox();
-		}
-
 		this.markImageLinks();
 		this.bindInstantPreviewCapture();
 
+		await this.ensureFancybox();
 		this.bindImageSelectors();
 		this.initialized = true;
 	}
@@ -55,6 +53,15 @@ export class FancyboxHandler {
 		const mod = await import("@fancyapps/ui");
 		this.Fancybox = mod.Fancybox;
 		await import("@fancyapps/ui/dist/fancybox/fancybox.css");
+	}
+
+	private async ensureFancybox(): Promise<void> {
+		if (this.Fancybox) {
+			return;
+		}
+
+		this.loadPromise ??= this.loadFancybox();
+		await this.loadPromise;
 	}
 
 	private bindImageSelectors(): void {
@@ -118,15 +125,20 @@ export class FancyboxHandler {
 
 				event.preventDefault();
 				event.stopPropagation();
-				this.prepareInstantPreview(trigger);
-				this.preloadAroundTrigger(trigger);
+				event.stopImmediatePropagation();
 
-				if (this.openInstantPreview(trigger)) {
-					event.stopImmediatePropagation();
-				}
+				void this.openTrigger(trigger);
 			},
 			{ capture: true, signal: this.clickController.signal },
 		);
+	}
+
+	private async openTrigger(trigger: HTMLElement): Promise<void> {
+		await this.ensureFancybox();
+		this.markImageLinks();
+		this.prepareInstantPreview(trigger);
+		this.preloadAroundTrigger(trigger);
+		this.openInstantPreview(trigger);
 	}
 
 	private markImageLinks(): void {
@@ -476,6 +488,7 @@ export class FancyboxHandler {
 	destroy(): void {
 		this.cleanup();
 		this.Fancybox = null;
+		this.loadPromise = null;
 		this.initialized = false;
 	}
 
