@@ -25,6 +25,16 @@ const particles = Array.from({ length: 22 }, (_, index) => ({
 	duration: `${13 + (index % 6) * 2}s`,
 	delay: `${index * -0.7}s`,
 }));
+
+const friendIssueUrl =
+	"https://github.com/zxykevin/my-astro-blog/issues/new?assignees=&labels=friend-link&template=friend-link.yml&title=%5BNew+Friend%5D+";
+
+const myFriendInfo = {
+	name: "星轨手札",
+	description: "德国留学、日本旅行与技术折腾记录",
+	url: "https://yuulog.org/",
+	avatar: "https://yuulog.org/_astro/avatar.Djw_wQKk_Z1Q0puo.webp",
+};
 ---
 
 <MainGridLayout
@@ -68,6 +78,41 @@ const particles = Array.from({ length: 22 }, (_, index) => ({
 				<p class="friends-subtitle">
 					遇见有趣的灵魂与散落在互联网角落的星光。
 				</p>
+				<a
+					class="friends-apply-link"
+					href={friendIssueUrl}
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					<Icon
+						name="material-symbols:add-link-rounded"
+						class="friends-apply-icon"
+					/>
+					<span>申请友链</span>
+				</a>
+			</section>
+
+			<section class="my-friend-info" aria-label="本站友链信息">
+				<div class="my-friend-card">
+					<img
+						class="my-friend-avatar"
+						src={myFriendInfo.avatar}
+						alt={`${myFriendInfo.name} 头像`}
+						loading="lazy"
+						decoding="async"
+					/>
+					<div class="my-friend-content">
+						<p class="my-friend-eyebrow">添加我的友链</p>
+						<h2>{myFriendInfo.name}</h2>
+						<p>{myFriendInfo.description}</p>
+						<div class="my-friend-fields">
+							<span>名称：{myFriendInfo.name}</span>
+							<span>简介：{myFriendInfo.description}</span>
+							<span>链接：{myFriendInfo.url}</span>
+							<span>头像：{myFriendInfo.avatar}</span>
+						</div>
+					</div>
+				</div>
 			</section>
 
 			<section class="friends-grid" aria-label="友情链接列表">
@@ -290,6 +335,123 @@ const particles = Array.from({ length: 22 }, (_, index) => ({
 		line-height: 1.8;
 	}
 
+	.friends-apply-link {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		margin-top: 1.4rem;
+		padding: 0.78rem 1.1rem;
+		border: 1px solid rgba(198, 225, 255, 0.28);
+		border-radius: 999px;
+		background: rgba(255, 255, 255, 0.14);
+		color: rgba(255, 255, 255, 0.92);
+		font-size: 0.95rem;
+		font-weight: 800;
+		line-height: 1;
+		box-shadow:
+			0 16px 42px rgba(0, 0, 0, 0.2),
+			inset 0 1px 0 rgba(255, 255, 255, 0.18);
+		backdrop-filter: blur(18px) saturate(1.25);
+		-webkit-backdrop-filter: blur(18px) saturate(1.25);
+		transition:
+			transform 220ms ease,
+			border-color 220ms ease,
+			background 220ms ease,
+			box-shadow 220ms ease;
+	}
+
+	.friends-apply-link:hover {
+		border-color: rgba(170, 222, 255, 0.6);
+		background: rgba(255, 255, 255, 0.2);
+		box-shadow:
+			0 20px 48px rgba(0, 0, 0, 0.28),
+			0 0 28px rgba(99, 190, 255, 0.22);
+		transform: translateY(-2px);
+	}
+
+	.friends-apply-icon {
+		font-size: 1.25rem;
+	}
+
+	.my-friend-info {
+		max-width: 48rem;
+		margin: clamp(2rem, 4vw, 3rem) auto 0;
+	}
+
+	.my-friend-card {
+		display: grid;
+		grid-template-columns: auto 1fr;
+		gap: 1.15rem;
+		align-items: center;
+		overflow: hidden;
+		border: 1px solid rgba(198, 225, 255, 0.2);
+		border-radius: 1.25rem;
+		background:
+			linear-gradient(
+				135deg,
+				rgba(255, 255, 255, 0.18),
+				rgba(255, 255, 255, 0.065)
+			),
+			rgba(12, 15, 31, 0.48);
+		padding: clamp(1rem, 3vw, 1.35rem);
+		box-shadow:
+			0 18px 48px rgba(0, 0, 0, 0.24),
+			inset 0 1px 0 rgba(255, 255, 255, 0.16);
+		backdrop-filter: blur(22px) saturate(1.35);
+		-webkit-backdrop-filter: blur(22px) saturate(1.35);
+		text-align: left;
+	}
+
+	.my-friend-avatar {
+		width: clamp(4.2rem, 12vw, 5.6rem);
+		height: clamp(4.2rem, 12vw, 5.6rem);
+		border-radius: 1.1rem;
+		object-fit: cover;
+		box-shadow: 0 0 22px rgba(133, 203, 255, 0.24);
+	}
+
+	.my-friend-content {
+		min-width: 0;
+	}
+
+	.my-friend-eyebrow {
+		margin-bottom: 0.35rem;
+		color: rgba(185, 225, 255, 0.7);
+		font-size: 0.76rem;
+		font-weight: 800;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+	}
+
+	.my-friend-card h2 {
+		color: rgba(255, 255, 255, 0.95);
+		font-size: clamp(1.2rem, 3vw, 1.6rem);
+		font-weight: 900;
+		line-height: 1.25;
+		letter-spacing: 0;
+	}
+
+	.my-friend-card p:not(.my-friend-eyebrow) {
+		margin-top: 0.35rem;
+		color: rgba(232, 244, 255, 0.72);
+		font-size: 0.95rem;
+		line-height: 1.65;
+	}
+
+	.my-friend-fields {
+		display: grid;
+		gap: 0.38rem;
+		margin-top: 0.85rem;
+		color: rgba(207, 235, 255, 0.75);
+		font-size: 0.82rem;
+		line-height: 1.45;
+	}
+
+	.my-friend-fields span {
+		overflow-wrap: anywhere;
+	}
+
 	.friends-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
@@ -473,6 +635,15 @@ const particles = Array.from({ length: 22 }, (_, index) => ({
 			border-radius: 1rem;
 		}
 
+		.my-friend-card {
+			grid-template-columns: 1fr;
+			text-align: center;
+		}
+
+		.my-friend-avatar {
+			justify-self: center;
+		}
+
 		.friend-card {
 			min-height: 10.5rem;
 			border-radius: 1rem;
@@ -634,8 +805,14 @@ const particles = Array.from({ length: 22 }, (_, index) => ({
 				card.style.setProperty("--my", "50%");
 			};
 
-			card.addEventListener("pointermove", card.__mizukiFriendPointerMove);
-			card.addEventListener("pointerleave", card.__mizukiFriendPointerLeave);
+			card.addEventListener(
+				"pointermove",
+				card.__mizukiFriendPointerMove,
+			);
+			card.addEventListener(
+				"pointerleave",
+				card.__mizukiFriendPointerLeave,
+			);
 		});
 	};
 

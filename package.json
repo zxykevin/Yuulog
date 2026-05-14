@@ -11,6 +11,7 @@
 		"dev": "astro dev",
 		"start": "astro dev",
 		"check": "astro check",
+		"review-friend-links": "node scripts/review-friend-links.mjs",
 		"update-anime": "node scripts/update-anime.mjs",
 		"update-bangumi": "node scripts/update-bangumi.mjs",
 		"update-bilibili": "node scripts/update-bilibili.mjs",
