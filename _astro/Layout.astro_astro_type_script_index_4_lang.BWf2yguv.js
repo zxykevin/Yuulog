@@ -1,0 +1,2 @@
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["_astro/eruda.CmDfI5Zd.js","_astro/_commonjsHelpers.CqkleIqs.js"])))=>i.map(i=>d[i]);
+import{_ as o}from"./preload-helper.CVfkMyKi.js";const d=new URLSearchParams(window.location.search);d.get("debug")==="1"&&!window.__mizukiErudaLoaded&&(window.__mizukiErudaLoaded=!0,o(async()=>{const{default:e}=await import("./eruda.CmDfI5Zd.js").then(a=>a.e);return{default:e}},__vite__mapDeps([0,1])).then(({default:e})=>{e.init()}).catch(e=>{console.error("Failed to load mobile debug console",e)}));

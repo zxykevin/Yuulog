@@ -5,61 +5,182 @@
   <link href="https://yuulog.org/" rel="alternate" type="text/html"/>
   <link href="https://yuulog.org/atom.xml" rel="self" type="application/atom+xml"/>
   <id>https://yuulog.org/</id>
-  <updated>2026-05-09T21:05:29.959Z</updated>
+  <updated>2026-05-16T17:10:40.608Z</updated>
   <language>zh_CN</language>
   <entry>
     <title>从零搭建 VPS 节点</title>
     <link href="https://yuulog.org/posts/build-vps-node-from-zero/" rel="alternate" type="text/html"/>
     <id>https://yuulog.org/posts/build-vps-node-from-zero/</id>
-    <published>2026-05-11T00:00:00.000Z</published>
-    <updated>2026-05-11T00:00:00.000Z</updated>
-    <summary>面向新手的 VPS 初始化思路，记录系统更新、安全配置、防火墙和服务部署的基本流程。</summary>
+    <published>2026-05-10T00:00:00.000Z</published>
+    <updated>2026-05-10T00:00:00.000Z</updated>
+    <summary>记录一次使用 Vultr 日本 VPS、Ubuntu 22.04、Xray-core 与 VLESS Reality Vision 搭建个人代理节点的完整流程。</summary>
     <content type="html"><![CDATA[<h1>从零搭建 VPS 节点</h1>
-<p>拿到一台新的 VPS 后，不建议直接部署业务。先做基础初始化，后面维护会轻松很多，也能避免一些低级安全问题。</p>
-<h2>1. 登录并更新系统</h2>
-<p>第一次登录通常使用服务商提供的 root 密码或 SSH Key。</p>
-<pre><code>ssh root@your_server_ip
-apt update
-apt upgrade -y
-</code></pre>
-<p>如果是 Debian 或 Ubuntu，先把系统包更新到最新，再继续配置用户和防火墙。</p>
-<h2>2. 创建普通用户</h2>
-<p>日常运维尽量不要一直使用 root。</p>
-<pre><code>adduser mizuki
-usermod -aG sudo mizuki
-</code></pre>
-<p>之后可以把本机公钥放到新用户的 <code>~/.ssh/authorized_keys</code> 里，并测试能否正常登录。</p>
-<h2>3. 配置 SSH</h2>
-<p>确认普通用户可登录后，再考虑关闭密码登录和 root 远程登录。</p>
-<pre><code>nano /etc/ssh/sshd_config
-</code></pre>
-<p>常见配置项：</p>
-<pre><code>PermitRootLogin no
-PasswordAuthentication no
-PubkeyAuthentication yes
-</code></pre>
-<p>修改后重启 SSH 服务：</p>
-<pre><code>systemctl restart ssh
-</code></pre>
-<p>重启前最好保留一个已登录窗口，避免配置错误后把自己锁在服务器外。</p>
-<h2>4. 开启防火墙</h2>
-<p>只放行必要端口。</p>
-<pre><code>ufw allow OpenSSH
-ufw allow 80
-ufw allow 443
-ufw enable
-ufw status
-</code></pre>
-<p>如果你改了 SSH 端口，记得先放行新端口再启用防火墙。</p>
-<h2>5. 部署服务前的检查清单</h2>
+<p>这篇记录的是我实际搭建一套自用 VPS 节点的流程：从购买 Vultr 服务器，到安装 Xray-core，再到手机端用 ClashBox / v2rayNG 连通测试。文中所有 IP、UUID、公钥、端口等敏感信息都用占位符替代，照着做时请换成你自己服务器上生成的配置。</p>
+<h2>1. 购买 VPS</h2>
+<p>我用的是 Vultr，最后选择的配置是：</p>
 <ul>
-<li>域名 DNS 是否已经解析到 VPS。</li>
-<li>服务器时间和时区是否正确。</li>
-<li>是否需要 Docker 或反向代理。</li>
-<li>日志、备份和自动续期证书是否安排好。</li>
+<li>地区：Tokyo, Japan</li>
+<li>系统：Ubuntu 22.04</li>
+<li>类型：Shared CPU</li>
+<li>配置：1 vCPU / 1GB RAM</li>
+<li>价格：约 5 美元/月</li>
+<li>Backup：关闭</li>
 </ul>
-<h2>小结</h2>
-<p>VPS 折腾的重点不是一次性跑起来，而是让它稳定、可恢复、可迁移。先把初始化流程写成笔记，之后每换一台机器都能少踩很多坑。</p>
+<p>一开始差点选成 Dedicated CPU 和美国 Chicago，后来改成了 Shared CPU + Tokyo + 1GB + 关闭 Backup。对于轻量自用节点来说，这个选择更合适：成本低、离亚洲网络更近，也足够跑基础代理服务。</p>
+<h2>2. 登录服务器</h2>
+<p>Vultr 创建实例后，可以先用 Web Console 确认系统能正常启动。后续管理更推荐用本地 SSH。</p>
+<p>在 Windows PowerShell 里执行：</p>
+<pre><code>ssh root@&lt;YOUR_SERVER_IP&gt;
+</code></pre>
+<p>第一次连接会提示：</p>
+<pre><code>Are you sure you want to continue connecting?
+</code></pre>
+<p>输入：</p>
+<pre><code>yes
+</code></pre>
+<p>如果重装系统后再次连接，可能会遇到：</p>
+<pre><code>REMOTE HOST IDENTIFICATION HAS CHANGED
+</code></pre>
+<p>这是因为本地保存的旧 SSH 指纹和新系统不一致。可以先删除旧记录：</p>
+<pre><code>ssh-keygen -R &lt;YOUR_SERVER_IP&gt;
+</code></pre>
+<p>然后重新 SSH 登录。</p>
+<h2>3. 重装服务器</h2>
+<p>第一次配置如果比较乱，最省心的办法是直接重装系统。</p>
+<p>在 Vultr 面板里选择：</p>
+<pre><code>Reinstall OS -&gt; Ubuntu 22.04
+</code></pre>
+<p>这一步会清空服务器并重新安装系统。对于刚开始搭建、还没有正式数据的 VPS 来说，重装比在混乱配置上继续修补更干净。</p>
+<h2>4. 安装代理服务端</h2>
+<p>我使用的是 <code>v2ray-agent</code> 一键脚本：</p>
+<pre><code>bash &lt;(curl -Ls https://raw.githubusercontent.com/mack-a/v2ray-agent/master/install.sh)
+</code></pre>
+<p>这个脚本会自动安装和配置相关组件，包括：</p>
+<ul>
+<li>Xray-core</li>
+<li>VLESS</li>
+<li>Reality</li>
+<li>XTLS Vision</li>
+</ul>
+<p>脚本进入菜单后，选择：</p>
+<pre><code>3. 一键无域名 Reality
+</code></pre>
+<p>核心选择：</p>
+<pre><code>1. Xray-core
+</code></pre>
+<p>后面大部分选项保持默认即可。最终生成的协议栈是：</p>
+<pre><code>VLESS + Reality + TCP + XTLS Vision
+</code></pre>
+<p>这也是整套节点的核心。</p>
+<h2>5. 保存节点信息</h2>
+<p>安装完成后，脚本会生成一条 <code>vless://</code> 开头的完整链接。务必把它保存到安全的地方，不要公开发布。</p>
+<p>节点信息大概长这样：</p>
+<pre><code>协议：VLESS
+地址：&lt;YOUR_SERVER_IP&gt;
+端口：&lt;REALITY_PORT&gt;
+传输：TCP
+安全：Reality
+Flow：xtls-rprx-vision
+SNI：www.u-can.co.jp
+Fingerprint：chrome
+UUID：&lt;YOUR_UUID&gt;
+Public Key：&lt;YOUR_PUBLIC_KEY&gt;
+Short ID：&lt;YOUR_SHORT_ID&gt;
+</code></pre>
+<p>其中 <code>www.u-can.co.jp</code> 是 Reality 的伪装目标站，是一个真实可访问的日本教育 / 资格培训网站。真正使用时，以脚本生成的配置为准，不要手动乱改 UUID、公钥和 Short ID。</p>
+<h2>6. 手机端测试</h2>
+<p>安卓 / 鸿蒙手机上可以先用 v2rayNG 测试，也可以用 ClashBox。</p>
+<p>如果使用 ClashBox，要选择：</p>
+<pre><code>mihomo / Clash.Meta 内核
+</code></pre>
+<p>原因是普通 Clash 不支持：</p>
+<pre><code>VLESS + Reality + Vision
+</code></pre>
+<p>如果把 <code>vless://</code> 链接转换成 Clash YAML，核心结构大概是：</p>
+<pre><code>proxies:
+  - name: JP-Reality
+    type: vless
+    server: &lt;YOUR_SERVER_IP&gt;
+    port: &lt;REALITY_PORT&gt;
+    uuid: &lt;YOUR_UUID&gt;
+    network: tcp
+    udp: true
+    tls: true
+    servername: www.u-can.co.jp
+    flow: xtls-rprx-vision
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: &lt;YOUR_PUBLIC_KEY&gt;
+      short-id: &lt;YOUR_SHORT_ID&gt;
+</code></pre>
+<p>规则部分要注意逗号格式。错误写法类似：</p>
+<pre><code>rules:
+  - DOMAIN ipinfo.io PROXY
+</code></pre>
+<p>这会报错：</p>
+<pre><code>rules[0] [DOMAIN ipinfo.io PROXY] error: format invalid
+</code></pre>
+<p>正确写法是：</p>
+<pre><code>rules:
+  - DOMAIN,ipinfo.io,PROXY
+  - MATCH,PROXY
+</code></pre>
+<p>导入后选择 <code>JP-Reality</code>，再打开浏览器或常用 App 测试访问情况。</p>
+<h2>7. 验证链路</h2>
+<p>连接成功后，整条链路是：</p>
+<pre><code>手机
+  ↓
+ClashBox / v2rayNG / v2rayN
+  ↓
+VLESS + Reality + Vision
+  ↓
+Vultr Tokyo VPS
+  ↓
+外网
+</code></pre>
+<p>我最后在手机上成功连上 <code>JP-Reality</code>，Google、X、ChatGPT 都能正常使用。能从手机端通过这条代理发出消息，就说明客户端、节点、VPS 出口这三段链路都已经打通。</p>
+<h2>8. 用 Termux 管理服务器</h2>
+<p>后续也可以在 Android 手机上用 Termux 管理 VPS。</p>
+<p>第一次使用时可能会发现没有 SSH：</p>
+<pre><code>The program ssh is not installed
+</code></pre>
+<p>安装 OpenSSH：</p>
+<pre><code>pkg update
+pkg install openssh
+</code></pre>
+<p>然后登录服务器：</p>
+<pre><code>ssh root@&lt;YOUR_SERVER_IP&gt;
+</code></pre>
+<p>进入服务器后，可以安装或打开 <code>htop</code> 查看资源占用：</p>
+<pre><code>htop
+</code></pre>
+<p>退出 <code>htop</code> 按：</p>
+<pre><code>q
+</code></pre>
+<h2>9. 进入 v2ray-agent 管理菜单</h2>
+<p>如果直接输入：</p>
+<pre><code>v2ray-agent
+</code></pre>
+<p>提示：</p>
+<pre><code>command not found
+</code></pre>
+<p>可以再次运行原安装命令进入管理菜单：</p>
+<pre><code>bash &lt;(curl -Ls https://raw.githubusercontent.com/mack-a/v2ray-agent/master/install.sh)
+</code></pre>
+<p>这个脚本既是安装器，也是管理入口。以后可以在菜单里做这些事：</p>
+<ul>
+<li>查看当前配置</li>
+<li>管理 Reality</li>
+<li>添加或删除 UUID</li>
+<li>管理用户</li>
+<li>更新或维护 Xray-core</li>
+</ul>
+<h2>10. 最终架构</h2>
+<p>最终这套方案可以概括成一句话：</p>
+<pre><code>Vultr 日本 VPS + Ubuntu 22.04 + Xray-core + VLESS Reality Vision + ClashBox/mihomo 客户端
+</code></pre>
+<p>它的优点是不用域名，配置流程相对直接，手机端和电脑端都能接入。真正需要注意的地方主要有三个：不要泄露节点链接，不要把真实 IP / UUID / 公钥发到公开页面，客户端一定要使用支持 Reality 和 Vision 的内核。</p>
+<p>搭好之后，建议把完整节点信息保存在本地密码管理器里；公开写博客时只记录流程和排错经验，敏感字段统一替换成占位符。</p>
 ]]></content>
     <author>
       <name>星轨手札</name>
@@ -67,38 +188,134 @@ ufw status
     <category term="技术笔记"></category>
   </entry>
   <entry>
-    <title>大阪到东京的日本巡礼路线</title>
-    <link href="https://yuulog.org/posts/osaka-to-tokyo-anime-pilgrimage/" rel="alternate" type="text/html"/>
-    <id>https://yuulog.org/posts/osaka-to-tokyo-anime-pilgrimage/</id>
-    <published>2026-05-10T00:00:00.000Z</published>
-    <updated>2026-05-10T00:00:00.000Z</updated>
-    <summary>一条适合初次规划的关西到关东动漫巡礼路线，把城市交通、作品场景和旅行节奏串起来。</summary>
-    <content type="html"><![CDATA[<h1>大阪到东京的日本巡礼路线</h1>
-<p>从大阪一路走到东京，是很适合第一次做动漫巡礼的路线。关西有热闹的街区和古都气息，关东则有密集的车站、校园、坡道和海边场景。</p>
-<h2>Day 1-2：大阪，先把旅行节奏调起来</h2>
-<p>大阪适合作为起点。抵达后可以先住在难波、梅田或天王寺附近，交通方便，晚上也有很多地方可以逛。</p>
-<p>可以安排：</p>
+    <title>从大阪到东京：关西、中部、关东动漫圣地巡礼路线复盘</title>
+    <link href="https://yuulog.org/posts/japan-anime-pilgrimage-osaka-kyoto-numazu-tokyo/" rel="alternate" type="text/html"/>
+    <id>https://yuulog.org/posts/japan-anime-pilgrimage-osaka-kyoto-numazu-tokyo/</id>
+    <published>2026-05-13T00:00:00.000Z</published>
+    <updated>2026-05-13T00:00:00.000Z</updated>
+    <summary>复盘一次从德国出发、经中国转机入境大阪，再一路经过奈良、京都、宇治、丰乡、沼津和东京的日本自由行与动漫巡礼路线。</summary>
+    <content type="html"><![CDATA[<h1>从大阪到东京：关西、中部、关东动漫圣地巡礼路线复盘</h1>
+<p>这次日本行的主线很清楚：从德国法兰克福出发，经上海转机入境大阪，再从关西一路向东，完成京都、宇治、丰乡、沼津、东京的动漫巡礼。原计划里有河口湖，但因为大雪和交通不确定，临时改去沼津，结果反而成了全程最高光的一段。</p>
+<p>最终实际路线大致是：</p>
+<pre><code>FRA 法兰克福 -&gt; PVG 上海 -&gt; KIX 大阪关西
+大阪 -&gt; 奈良 -&gt; 京都 -&gt; 宇治 -&gt; 丰乡 -&gt; 沼津 -&gt; 东京
+HND 羽田 -&gt; PEK 北京 -&gt; FRA 法兰克福
+</code></pre>
+<h2>1. 出发和入境：德国经中国到大阪</h2>
+<p>去程不是德国直飞日本，而是法兰克福到上海，再从上海飞大阪关西机场。上海中转时间大约 20 小时，所以不是普通短转机，而是可以入境中国、取行李、第二天重新托运的长中转。</p>
+<p>这个路线的关键点是行李。虽然航程连着买，但行李实际只到上海，需要在上海入境后取出，第二天再重新托运到大阪。流程大概是：</p>
+<ol>
+<li>法兰克福值机，拿 FRA -&gt; PVG 和 PVG -&gt; KIX 登机牌。</li>
+<li>行李托运到上海。</li>
+<li>上海入境中国，取托运行李。</li>
+<li>休息或短暂停留。</li>
+<li>第二天重新值机、重新托运行李。</li>
+<li>抵达 KIX 后入境日本。</li>
+</ol>
+<p>到达关西机场后，先处理最基础的几件事：入境、取行李、办或启用 ICOCA、取现金。我当时取了 50,000 日元现金。日本大城市刷卡和电子支付已经很普遍，但巡礼点、小店、储物柜、景区和乡下交通，现金仍然能救命。</p>
+<h2>2. Day 1：大阪入境日</h2>
+<p>第一天路线很简单：</p>
+<pre><code>KIX 关西机场 -&gt; 大阪市区 -&gt; 心斋桥 / 道顿堀
+</code></pre>
+<p>这一天不要排太满。第一次落地日本，真正要完成的是入境、取现、交通卡、到酒店、适应日本交通和街道节奏。晚上去心斋桥、道顿堀刚好：招牌密集、餐饮多、夜景强，很有“终于到日本了”的落地感。</p>
+<p>大阪更适合作为缓冲站，而不是一上来就暴走。</p>
+<p><img src="../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/001.jpg" alt="大阪道顿堀夜晚的格力高广告牌" /></p>
+<p><em>落地后的第一晚，道顿堀和心斋桥把“终于到日本了”的感觉一下子拉满。</em></p>
+<h2>3. Day 2：大阪、奈良、京都</h2>
+<p>第二天是经典关西移动：</p>
+<pre><code>大阪 -&gt; 奈良 -&gt; 京都
+</code></pre>
+<p>上午可以简单看大阪城或大阪市区，中段去奈良公园和东大寺，晚上到京都。奈良适合作为大阪到京都之间的半日过渡，路线顺，节奏也刚好从大阪的商业感切到古都和自然氛围。</p>
+<p>这一天的重点不是“刷满所有景点”，而是完成城市切换。拖着行李时尤其要提前想好寄存，不要把自己变成移动仓库。</p>
+<p><img src="../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/002.jpg" alt="大阪城天守阁" /></p>
+<p><em>上午从大阪城开始，把关西第一段行程的城市感建立起来。</em></p>
+<p><img src="../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/003.jpg" alt="奈良公园里喂鹿" /></p>
+<p><em>奈良适合夹在大阪和京都之间，节奏会自然慢下来。</em></p>
+<h2>4. Day 3：京都和宇治</h2>
+<p>第三天是关西段核心：</p>
+<pre><code>伏见稻荷 -&gt; 清水寺 / 二年坂三年坂 / 八坂神社 -&gt; 宇治 -&gt; 京都商店街
+</code></pre>
+<p>京都热门点一定要早起。伏见稻荷如果晚去，千本鸟居基本就是人挤人；早上去才能拍到比较干净的画面。清水寺、二年坂三年坂和八坂神社也一样，越晚人越多。</p>
+<p><img src="../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/004.jpg" alt="伏见稻荷的千本鸟居" /></p>
+<p><em>早起去伏见稻荷的回报很直接：鸟居之间终于有能呼吸的空隙。</em></p>
+<p><img src="../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/005.jpg" alt="清水寺舞台与京都城市远景" /></p>
+<p><em>清水寺这一段基本靠走，天气和人流都会直接影响体验。</em></p>
+<p>下午去宇治，是《響け！ユーフォニアム》的核心巡礼线。宇治桥、宇治川、平等院、抹茶甜品店、京吹取景地，都很适合慢慢走。宇治和京都市区的气质完全不同：城市更小，河边更安静，作品记忆和现实地点叠在一起的感觉更强。</p>
+<p><img src="../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/006.jpg" alt="宇治的京阿尼作品展示" /></p>
+<p><em>宇治不只是观光点，更像是把京阿尼作品记忆放回现实街道里。</em></p>
+<p><img src="../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/007.jpg" alt="宇治抹茶芭菲和抹茶" /></p>
+<p><em>抹茶甜品不是单纯补给，它会和宇治这个地点本身绑定在一起。</em></p>
+<p>晚上回京都后，可以补玉子市场相关商店街。这样 Day 3 实际上变成了“京都传统观光 + 京阿尼作品巡礼 + 宇治京吹核心巡礼”。</p>
+<p><img src="../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/008.jpg" alt="京都商店街里的玉子市场角色牌" /></p>
+<p><em>玉子市场相关商店街更像隐藏支线，适合放在京都夜晚收尾。</em></p>
+<h2>5. Day 4：丰乡小学，然后临时改道沼津</h2>
+<p>第四天原计划很硬：</p>
+<pre><code>京都 -&gt; 丰乡小学校旧校舍群 -&gt; 河口湖
+</code></pre>
+<p>丰乡小学是《K-ON!》非常重要的巡礼地。它交通不算方便，对普通游客吸引力没那么强，但对作品粉丝非常值。校舍、楼梯、部室、周边小店，都有一种不是商业景点、而是真正为了作品走到这里的感觉。</p>
+<p><img src="../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/009.jpg" alt="丰乡小学校旧校舍里的茶会布置" /></p>
+<p><em>丰乡小学的魅力在于它不像普通景点，更像把作品里的部室空气保留下来了。</em></p>
+<p>问题出在后半段：河口湖大雪，交通不稳定。冬天去富士山周边，最大的风险不只是看不到山，而是进不去、出不来，或者后面东京行程被连带打乱。</p>
+<p>最后我没有硬冲河口湖，而是改去沼津。这个决定非常正确。</p>
+<p>沼津作为替代方案有几个优势：</p>
 <ul>
-<li>道顿堀和心斋桥：适合第一晚散步和吃饭。</li>
-<li>日本桥：电子产品、模型、周边店密集，动漫氛围很足。</li>
-<li>通天阁、新世界：街景有很强的昭和感，适合拍照。</li>
+<li>靠近三岛，能接东海道新干线和 JR 干线。</li>
+<li>仍然有看富士山的机会。</li>
+<li>是 LoveLive! Sunshine!! 核心圣地。</li>
+<li>有骏河湾和海鲜。</li>
+<li>第二天进东京比从河口湖脱困稳定得多。</li>
 </ul>
-<h2>Day 3：京都或奈良，加入古都支线</h2>
-<p>从大阪去京都或奈良都很方便。京都适合神社、街巷和校园氛围的巡礼；奈良节奏更慢，适合把行程留白。</p>
-<p>如果目标是作品场景，建议提前把截图、车站名、步行路线存在离线地图里。巡礼当天不要排太满，因为找角度和等人流散开会花时间。</p>
-<h2>Day 4：新干线前往东京</h2>
-<p>从新大阪到东京可以坐东海道新干线。天气好时，靠窗座位有机会看到富士山。抵达东京后建议把住宿定在山手线沿线或地铁换乘方便的位置。</p>
-<h2>Day 5-6：东京核心巡礼</h2>
-<p>东京的巡礼点分布很散，最好按区域拆：</p>
+<p>晚上在沼津吃了魚がし鮨本店，比纯游客区回转寿司更有地方鱼获特色，也成了这次临时改线后的惊喜。</p>
+<p><img src="../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/010.jpg" alt="沼津海鲜丼" /></p>
+<p><em>临时改到沼津之后，骏河湾海鲜成了第一份补偿。</em></p>
+<h2>6. Day 5：沼津 LoveLive! Sunshine!! 巡礼</h2>
+<p>第五天是整趟旅行最惊喜的一天：</p>
+<pre><code>沼津 -&gt; 三津 / 淡岛方向 -&gt; 骏河湾富士山 -&gt; 东京
+</code></pre>
+<p>沼津的巡礼密度很高。市区、三津、淡岛、水族馆、港口、LoveLive 痛船、骏河湾海岸线，都和 LoveLive! Sunshine!! 绑定得很深。</p>
+<p>这一天最有记忆点的是骏河湾、富士山和痛船同框。原本河口湖看富士山失败，但沼津给了另一种更有个人主题的富士山：不是单纯风景，而是“海 + 富士山 + 动漫巡礼”的组合。</p>
+<p><img src="../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/014.jpg" alt="骏河湾、富士山与 LoveLive 痛船同框" /></p>
+<p><em>这张就是河口湖取消后的神展开：富士山、骏河湾、LoveLive 痛船全都赶上了。</em></p>
+<p>下午或晚上从沼津去东京也很顺：</p>
+<pre><code>沼津 -&gt; 三岛 -&gt; 东京
+</code></pre>
+<p>这就是为什么沼津是高质量替代方案。它不是随便找个地方避险，而是同时保住了富士山、巡礼、海鲜和后续交通。</p>
+<h2>7. 东京阶段：二次元主战场</h2>
+<p>东京阶段的核心区域包括：</p>
 <ul>
-<li>秋叶原：电器街、周边店、街景摄影。</li>
-<li>新宿、涩谷、池袋：城市夜景和作品常见舞台。</li>
-<li>御茶水、神田、四谷：坡道、桥梁、学校周边氛围。</li>
-<li>镰仓、江之岛：如果时间足够，非常适合安排一日海边巡礼。</li>
+<li>秋叶原：周边、手办、CD、BD、二次元店、中古店。</li>
+<li>下北泽：孤独摇滚和现实乐队文化氛围。</li>
+<li>池袋：二次元商业区和动漫店。</li>
+<li>涩谷：现代东京感、夜景、SHIBUYA SKY。</li>
+<li>新宿：城市密度、交通枢纽和夜景。</li>
+<li>台场：海湾景观和商业设施。</li>
+<li>浅草：传统东京观光。</li>
 </ul>
-<h2>路线规划建议</h2>
-<p>巡礼不是打卡越多越好。我的习惯是每天只安排 2-3 个核心点，剩下时间留给路上的偶遇：便利店的新口味、车站里的海报、傍晚突然变漂亮的天空。</p>
-<p>如果第一次从大阪走到东京，重点不是把地图点亮，而是找到自己喜欢的旅行节奏。</p>
+<p>秋叶原适合第一次朝圣式体验，但不要低估它的时间黑洞属性。下北泽则更适合喜欢乐队番、MyGO!!!!!、Ave Mujica、Girls Band Cry、K-ON! 这类作品的人，它的现实音乐场景和动画舞台感是连在一起的。</p>
+<p>东京还很适合用长焦拍街景：坡道、铁路、十字路口、城市压缩感，都能拍出很干净的画面。《你的名字。》相关地点和东京坡道巡礼，也很适合放进东京段。</p>
+<p><img src="../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/011.jpg" alt="东京夜景与东京塔" /></p>
+<p><em>SHIBUYA SKY 或类似高处视角很适合第一次东京旅行，用来建立城市尺度。</em></p>
+<p><img src="../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/012.jpg" alt="赤羽桥站前的东京塔夜景" /></p>
+<p><em>东京塔近距离夜景更像城市巡礼的注脚，路牌和塔同框很有现场感。</em></p>
+<p><img src="../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/013.jpg" alt="台场独角兽高达" /></p>
+<p><em>台场适合作为东京段的海湾支线，独角兽高达是很稳定的二次元地标。</em></p>
+<h2>8. 交通和行李经验</h2>
+<p>ICOCA 很实用。它能覆盖大阪、京都、奈良、JR 普通线路，到了东京也能继续刷。第一次日本多城市自由行，IC 卡能减少大量买票和换乘时的心理成本。</p>
+<p>长距离移动要灵活。大阪、京都、名古屋、三岛、东京这些大动脉问题不大，真正影响行程的是冬天山区和富士山周边天气。票不一定是最大问题，天气和交通中断才是。</p>
+<p>行李不要拖去所有巡礼点。丰乡、宇治、沼津这种地方，轻装体验会好很多。退房后跨城市移动，优先考虑酒店寄存、车站 coin locker 或可靠店铺寄存。</p>
+<h2>9. 可复用行程模板</h2>
+<p>如果下次复刻类似路线，可以这样安排：</p>
+<pre><code>Day 1  大阪落地，心斋桥 / 道顿堀
+Day 2  大阪 -&gt; 奈良 -&gt; 京都
+Day 3  京都早起观光 -&gt; 宇治京吹巡礼
+Day 4  京都 -&gt; 丰乡 K-ON! -&gt; 静冈方向
+Day 5  沼津 LoveLive! Sunshine!! -&gt; 东京
+Day 6  秋叶原 / 池袋 / 下北泽
+Day 7  涩谷 / 新宿 / 台场 / 浅草
+</code></pre>
+<p>冬天如果安排河口湖，一定提前准备替代方案。沼津、三岛、静冈一线就是很好的备选：交通稳、接东京方便，而且富士山和动漫巡礼都有。</p>
+<h2>10. 一句话总结</h2>
+<p>这次旅行最成功的地方，不是完全按原计划执行，而是在河口湖大雪时果断改线，把一次可能失败的富士山行程，变成了沼津、骏河湾、LoveLive 痛船、海鲜寿司和富士山同框的高质量巡礼。</p>
 ]]></content>
     <author>
       <name>星轨手札</name>
@@ -106,33 +323,234 @@ ufw status
     <category term="旅行记录"></category>
   </entry>
   <entry>
-    <title>德国留学日常</title>
-    <link href="https://yuulog.org/posts/germany-student-daily/" rel="alternate" type="text/html"/>
-    <id>https://yuulog.org/posts/germany-student-daily/</id>
-    <published>2026-05-09T00:00:00.000Z</published>
-    <updated>2026-05-09T00:00:00.000Z</updated>
-    <summary>从早八课堂到超市采购，记录德国留学生活里真实又琐碎的一天。</summary>
-    <content type="html"><![CDATA[<h1>德国留学日常</h1>
-<p>德国留学最真实的样子，往往不是朋友圈里那张滤镜很重的街景，而是早晨赶车、课间买咖啡、晚上对着德语邮件反复确认附件有没有传对。</p>
-<h2>上午：从电车开始的一天</h2>
-<p>如果当天有早课，我会提前看好 DB 或本地交通 App。德国公共交通整体方便，但临时延误也很常见，所以出门前多留十分钟会安心很多。</p>
-<p>到学校后，第一件事通常是找一个能充电的位置。课堂节奏比想象中更强调主动提问和课前阅读，老师不会把所有知识点都拆到很细，很多理解要靠自己课后补。</p>
-<h2>中午：食堂和超市</h2>
-<p>学生食堂是控制预算的好地方。想换口味时，我会去亚超补一点调料，简单做米饭、咖喱、拉面或者炒菜。真正开始留学后才发现，会做几道稳定的家常菜是一种很强的生活技能。</p>
-<h2>下午：学习、手续和邮件</h2>
-<p>德国生活里有很多“纸面流程”：住房合同、保险、银行、居留、广播电视费。每一项看起来都不复杂，但如果德语邮件读得慢，就会很消耗精力。</p>
-<p>我的经验是：</p>
+    <title>用 Cloudflare Worker 给 Astro 博客接入 Umami 访客统计</title>
+    <link href="https://yuulog.org/posts/umami-cloud-worker-stats-guide/" rel="alternate" type="text/html"/>
+    <id>https://yuulog.org/posts/umami-cloud-worker-stats-guide/</id>
+    <published>2026-05-12T00:00:00.000Z</published>
+    <updated>2026-05-12T00:00:00.000Z</updated>
+    <summary>记录一次为 Astro 博客接入 Umami Cloud、Cloudflare Worker 代理、首页历史访客数和文章浏览量的完整过程，并总结几个容易踩坑的 API 路径问题。</summary>
+    <content type="html"><![CDATA[<h1>用 Cloudflare Worker 给 Astro 博客接入 Umami 访客统计</h1>
+<p>今天给博客补上了 Umami 统计：页面访问由 Umami 脚本记录，统计读取则通过 Cloudflare Worker 做一层安全代理。这样前端既能显示首页历史访客数和文章页浏览量，又不会把 Umami API Key 暴露到浏览器里。</p>
+<p>这篇文章记录完整接入过程。文中的域名、网站 ID 和密钥都使用占位符，照着做时请替换成自己的配置。</p>
+<h2>先在 Umami Cloud 里准备网站和 API Key</h2>
+<p>开始写代码之前，先把 Umami Cloud 后台里的几件事做完。这里不需要把任何密钥写进博客仓库，只要拿到后面配置 Worker 会用到的三个值：</p>
+<pre><code>UMAMI_API_URL=https://api.umami.is
+UMAMI_WEBSITE_ID=&lt;YOUR_WEBSITE_ID&gt;
+UMAMI_API_KEY=&lt;YOUR_UMAMI_API_KEY&gt;
+</code></pre>
+<h3>1. 添加网站</h3>
+<p>登录 Umami Cloud 后，进入 Websites 页面，点击添加网站。通常需要填写：</p>
 <ul>
-<li>重要文件按主题建文件夹保存。</li>
-<li>每次办手续都记录日期、联系人和下一步。</li>
-<li>不确定的地方尽早发邮件确认。</li>
+<li>网站名称：方便自己识别即可，比如 <code>My Blog</code></li>
+<li>网站域名：填写正式访问域名，比如 <code>example.com</code></li>
+<li>时区：按自己主要统计口径选择</li>
 </ul>
-<h2>晚上：给自己一点缓冲</h2>
-<p>晚上会留一点时间看番、整理照片，或者写博客。海外生活不总是浪漫的，但把每天的小事写下来，会让许多当下觉得麻烦的瞬间，变成以后能回头看的轨迹。</p>
+<p>保存后，Umami 会创建一个网站条目。这个条目对应后面统计脚本里的 <code>data-website-id</code>。</p>
+<h3>2. 获取 Website ID</h3>
+<p>进入刚刚创建的网站详情页，找到网站设置或脚本安装区域。Umami 会给出类似这样的安装脚本：</p>
+<pre><code>&lt;script
+	defer
+	src="https://cloud.umami.is/script.js"
+	data-website-id="&lt;YOUR_WEBSITE_ID&gt;"
+&gt;&lt;/script&gt;
+</code></pre>
+<p>其中 <code>&lt;YOUR_WEBSITE_ID&gt;</code> 就是网站 ID。它不是 API Key，但教程和截图里仍建议打码，避免把自己的站点配置原样暴露出来。</p>
+<h3>3. 生成 API Key</h3>
+<p>在 Umami Cloud 的账户设置里找到 API Keys，创建一个新的 API Key。建议命名成容易识别的用途，例如：</p>
+<pre><code>blog-stats-worker
+</code></pre>
+<p>生成后只复制一次，立刻保存到 Cloudflare Worker Secret：</p>
+<pre><code>UMAMI_API_KEY=&lt;YOUR_UMAMI_API_KEY&gt;
+</code></pre>
+<p>不要把这个值写进 Astro 代码、Markdown 文章、GitHub 仓库或浏览器端脚本。后续所有读取统计的请求都应由 Worker 代发。</p>
+<h3>4. 在 Worker 里配置变量</h3>
+<p>Cloudflare Worker 里分别配置：</p>
+<pre><code>Variables:
+UMAMI_API_URL=https://api.umami.is
+UMAMI_WEBSITE_ID=&lt;YOUR_WEBSITE_ID&gt;
+
+Secrets:
+UMAMI_API_KEY=&lt;YOUR_UMAMI_API_KEY&gt;
+</code></pre>
+<p><code>UMAMI_API_URL</code> 用 API 域名，<code>UMAMI_WEBSITE_ID</code> 用网站 ID，<code>UMAMI_API_KEY</code> 放 Secret。这样前端请求 Worker 时，只能拿到裁剪后的统计结果，拿不到真正的 API Key。</p>
+<h2>为什么要加 Worker 代理</h2>
+<p>Umami 的统计脚本本身可以直接放在网页里：</p>
+<pre><code>&lt;script
+	defer
+	src="https://cloud.umami.is/script.js"
+	data-website-id="&lt;YOUR_WEBSITE_ID&gt;"
+&gt;&lt;/script&gt;
+</code></pre>
+<p>这段脚本只负责“记录访问”。如果想在自己的页面上显示统计数据，比如“历史访客数”或“当前文章浏览量”，就需要调用 Umami API。</p>
+<p>问题在于：Umami Cloud API 需要 API Key。这个 Key 不能写进前端，否则任何人打开浏览器开发者工具都能看到。</p>
+<p>所以结构变成这样：</p>
+<pre><code>浏览器
+  -&gt; Cloudflare Worker
+  -&gt; Umami Cloud API
+  -&gt; Worker 返回安全裁剪后的统计结果
+  -&gt; 页面显示 views / visitors
+</code></pre>
+<p>前端只知道 Worker 地址，不知道 API Key。</p>
+<h2>第一步：在全站 Layout 加载 Umami 脚本</h2>
+<p>Astro 中可以用 <code>import.meta.env.PROD</code> 判断是否是生产环境。这样本地开发时不会加载统计脚本，也不会污染访问数据。</p>
+<p>示例：</p>
+<pre><code>---
+const isProduction = import.meta.env.PROD;
+---
+
+{
+	isProduction &amp;&amp; (
+		&lt;script
+			is:inline
+			defer
+			src="https://cloud.umami.is/script.js"
+			data-website-id="&lt;YOUR_WEBSITE_ID&gt;"
+		&gt;&lt;/script&gt;
+	)
+}
+</code></pre>
+<p>这里的 <code>data-website-id</code> 不是 API Key，但仍建议不要在文章里写自己的真实值。公开代码仓库中它通常不可避免会出现，写教程时用占位符即可。</p>
+<h2>第二步：准备 Cloudflare Worker 环境变量</h2>
+<p>在 Cloudflare Worker 里配置：</p>
+<pre><code>Secrets:
+UMAMI_API_KEY=&lt;YOUR_UMAMI_API_KEY&gt;
+
+Variables:
+UMAMI_API_URL=https://api.umami.is
+UMAMI_WEBSITE_ID=&lt;YOUR_WEBSITE_ID&gt;
+</code></pre>
+<p>注意：<code>UMAMI_API_URL</code> 填 <code>https://api.umami.is</code>，不要填 <code>https://cloud.umami.is</code>。前者是 API 域名，后者是统计脚本和管理页面相关域名。</p>
+<h2>第三步：实现 Worker 统计代理</h2>
+<p>最终可用的 Umami Cloud stats endpoint 是：</p>
+<pre><code>https://api.umami.is/v1/websites/&lt;YOUR_WEBSITE_ID&gt;/stats
+</code></pre>
+<p>Worker 里拼接时，可以兼容用户把 <code>UMAMI_API_URL</code> 写成 <code>https://api.umami.is/v1</code> 的情况，所以先去掉结尾的 <code>/v1</code>：</p>
+<pre><code>const apiBase = env.UMAMI_API_URL.replace(/\/$/, "").replace(/\/v1$/, "");
+const url = new URL(`${apiBase}/v1/websites/${env.UMAMI_WEBSITE_ID}/stats`);
+</code></pre>
+<p>认证头使用：</p>
+<pre><code>{
+	"x-umami-api-key": env.UMAMI_API_KEY
+}
+</code></pre>
+<p>Worker 最后只返回前端需要的字段：</p>
+<pre><code>{
+	"ok": true,
+	"views": 123,
+	"visitors": 45
+}
+</code></pre>
+<p>不要把 <code>rawStats</code>、请求头、API Key 或账户信息返回给前端。调试阶段可以临时返回上游状态码，但上线后要删掉。</p>
+<h2>第四步：读取 pageviews 和 visitors</h2>
+<p>Umami 的返回结构可能因版本不同略有差异。有的字段直接是数字，有的可能是对象：</p>
+<pre><code>function num(value) {
+	return Number(value?.value ?? value);
+}
+
+const views = num(stats.pageviews ?? stats.views);
+const visitors = num(stats.visitors);
+</code></pre>
+<p>这样无论返回：</p>
+<pre><code>{ "pageviews": 3, "visitors": 2 }
+</code></pre>
+<p>还是：</p>
+<pre><code>{ "pageviews": { "value": 3 }, "visitors": { "value": 2 } }
+</code></pre>
+<p>都能正常解析。</p>
+<h2>第五步：给前端做一个通用 Stats 组件</h2>
+<p>前端组件只做三件事：</p>
+<ol>
+<li>读取当前 <code>window.location.pathname</code></li>
+<li>请求 Worker：<code>&lt;WORKER_URL&gt;/?path=&lt;CURRENT_PATH&gt;</code></li>
+<li>根据需要显示 <code>views</code> 或 <code>visitors</code></li>
+</ol>
+<p>示例：</p>
+<pre><code>const url = new URL("&lt;YOUR_WORKER_URL&gt;");
+url.searchParams.set("path", window.location.pathname || "/");
+
+const response = await fetch(url, {
+	headers: { Accept: "application/json" },
+});
+const data = await response.json();
+</code></pre>
+<p>首页使用 <code>visitors</code>，文章页使用 <code>views</code>。</p>
+<h2>第六步：首页显示历史访客数</h2>
+<p>站点统计卡片里新增一行：</p>
+<pre><code>历史访客数  &lt;visitors&gt;
+</code></pre>
+<p>样式直接沿用原来的站点统计 widget：图标、字号、颜色和间距都保持一致，这样不会让统计功能像“硬塞进去”的外部模块。</p>
+<p>移动端如果使用 drawer 或侧边栏折叠面板，需要确认站点统计组件也被加入移动端组件列表。我的做法是把站点统计放在移动端抽屉里的倒数第二个，刚好显示在友情链接之前：</p>
+<pre><code>drawer: [
+	"profile",
+	"announcement",
+	"music-sidebar",
+	"categories",
+	"tags",
+	"site-stats",
+	"friend-links",
+]
+</code></pre>
+<h2>第七步：文章页显示当前文章浏览量</h2>
+<p>文章页可以在发布日期、分类、标签这些 meta 信息旁边追加浏览量：</p>
+<pre><code>浏览量  &lt;views&gt;
+</code></pre>
+<p>关键点是查询路径要等于当前文章的真实 URL path，例如：</p>
+<pre><code>/posts/example-post/
+</code></pre>
+<p>如果文章 permalink 有自定义规则，尽量用 <code>window.location.pathname</code>，不要手写 slug 拼接。这样以后改链接结构时，统计查询也不会跟着坏掉。</p>
+<h2>第八步：几个踩坑点</h2>
+<h3>1. <code>cloud.umami.is</code> 和 <code>api.umami.is</code> 不是一回事</h3>
+<p>统计脚本来自：</p>
+<pre><code>https://cloud.umami.is/script.js
+</code></pre>
+<p>API 请求使用：</p>
+<pre><code>https://api.umami.is
+</code></pre>
+<p>把 API URL 写成 <code>cloud.umami.is</code> 会遇到 404 或 HTML 错误页。</p>
+<h3>2. Cloud API 的可用 stats 路径</h3>
+<p>这次最终确认可用的是：</p>
+<pre><code>/v1/websites/&lt;YOUR_WEBSITE_ID&gt;/stats
+</code></pre>
+<p>不要拼成 self-hosted 风格的：</p>
+<pre><code>/api/websites/&lt;YOUR_WEBSITE_ID&gt;/stats
+</code></pre>
+<p>也不要在 <code>https://api.umami.is</code> 后漏掉 <code>/v1</code>。</p>
+<h3>3. <code>startAt=0</code> 不一定是好主意</h3>
+<p>我最后使用站点创建附近的时间作为默认起点：</p>
+<pre><code>const START_AT = Date.parse("2026-05-11T00:00:00.000Z");
+</code></pre>
+<p>实际使用时可以换成你的网站上线日期。这样历史统计范围更明确，也避免请求一个过大的时间跨度。</p>
+<h3>4. 调试信息要及时删掉</h3>
+<p>调试 Worker 时，可以临时返回：</p>
+<pre><code>{
+	"upstreamStatus": 200,
+	"upstreamUrl": "...",
+	"rawStats": {}
+}
+</code></pre>
+<p>但上线后建议只返回：</p>
+<pre><code>{
+	"ok": true,
+	"views": 3,
+	"visitors": 2
+}
+</code></pre>
+<p>统计数据本身通常不是敏感信息，但账户结构、上游返回原文和内部 URL 没必要长期暴露。</p>
+<h2>最终效果</h2>
+<p>接入完成后：</p>
+<ul>
+<li>Umami 脚本只在生产环境记录访问</li>
+<li>API Key 只存在 Worker Secret 里</li>
+<li>首页能显示历史访客数</li>
+<li>文章页能显示当前文章浏览量</li>
+<li>本地开发不会污染统计</li>
+<li>移动端也能看到站点统计面板</li>
+</ul>
+<p>这套方案比较适合 Astro + Cloudflare Pages + Umami Cloud 的组合。核心原则很简单：记录访问可以放前端，读取统计要走服务端代理；公开教程和提交记录里，只写结构和占位符，不写自己的密钥与账户信息。</p>
 ]]></content>
     <author>
       <name>星轨手札</name>
     </author>
-    <category term="德国留学"></category>
+    <category term="技术笔记"></category>
   </entry>
 </feed>
