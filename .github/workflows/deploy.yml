@@ -36,6 +36,8 @@ jobs:
       
       - name: Build site
         run: pnpm run build
+        env:
+          PUBLIC_TURNSTILE_SITE_KEY: 0x4AAAAAADQj2lpYJ7LrseHl
       
       - name: Deploy to pages branch
         uses: JamesIves/github-pages-deploy-action@v4
