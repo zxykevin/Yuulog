@@ -116,7 +116,9 @@ export default defineConfig({
 		svelte({
 			preprocess: vitePreprocess(),
 		}),
-		sitemap(),
+		sitemap({
+			filter: (page) => !new URL(page).pathname.startsWith("/admin/"),
+		}),
 	],
 	markdown: {
 		remarkPlugins: [

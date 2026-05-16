@@ -46,6 +46,7 @@ const isProduction = import.meta.env.PROD;
 		<HeadTags
 			title={pageTitle}
 			description={description}
+			noindex
 			configHue={configHue}
 		/>
 		<style define:vars={{ configHue, "page-width": `${PAGE_WIDTH}rem` }} />
