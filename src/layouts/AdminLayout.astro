@@ -1,0 +1,104 @@
+---
+import ConfigCarrier from "@components/misc/ConfigCarrier.astro";
+import Navbar from "@components/organisms/navigation/Navbar.astro";
+import AnalyticsScripts from "./partials/AnalyticsScripts.astro";
+import HeadTags from "./partials/HeadTags.astro";
+import { profileConfig, siteConfig } from "@/config";
+import { PAGE_WIDTH } from "@constants/constants";
+import "../styles/main.css";
+import "../styles/mobile-navbar.css";
+import "../styles/wallpaper-navbar-transparent.css";
+
+interface Props {
+	title?: string;
+	description?: string;
+	lang?: string;
+}
+
+const { title, description, lang } = Astro.props;
+const configHue = siteConfig.themeColor.hue;
+const pageTitle = title
+	? `${title} - ${siteConfig.title}`
+	: `${siteConfig.title} - Admin`;
+const siteLang = (lang ?? siteConfig.lang).replace("_", "-");
+const isProduction = import.meta.env.PROD;
+---
+
+<!doctype html>
+<html
+	lang={siteLang}
+	class="bg-[var(--page-bg)] text-[14px] md:text-[16px]"
+	data-overlayscrollbars-initialize
+>
+	<head>
+		<meta charset="UTF-8" />
+		<AnalyticsScripts thirdPartyAnalytics={siteConfig.thirdPartyAnalytics} />
+		{
+			isProduction && (
+				<script
+					is:inline
+					defer
+					src="https://cloud.umami.is/script.js"
+					data-website-id="f7131722-db36-4b83-b297-62406cf414c8"
+				/>
+			)
+		}
+		<HeadTags
+			title={pageTitle}
+			description={description}
+			configHue={configHue}
+		/>
+		<style define:vars={{ configHue, "page-width": `${PAGE_WIDTH}rem` }} />
+		<link
+			rel="alternate"
+			type="application/rss+xml"
+			title={profileConfig.name}
+			href={`${Astro.site}rss.xml`}
+		/>
+		<slot name="head" />
+	</head>
+	<body class="min-h-screen" data-overlayscrollbars-initialize>
+		<ConfigCarrier />
+		<div class="admin-shell">
+			<header class="admin-navbar">
+				<Navbar />
+			</header>
+			<main class="admin-main">
+				<slot />
+			</main>
+		</div>
+	</body>
+</html>
+
+<style is:global>
+	.admin-shell {
+		min-height: 100vh;
+		background:
+			radial-gradient(circle at top left, rgba(255, 255, 255, 0.55), transparent 34rem),
+			var(--page-bg);
+	}
+	:root.dark .admin-shell {
+		background:
+			radial-gradient(circle at top left, rgba(255, 255, 255, 0.08), transparent 34rem),
+			var(--page-bg);
+	}
+	.admin-navbar {
+		position: sticky;
+		top: 0;
+		z-index: 50;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+		background: color-mix(in oklab, var(--page-bg) 72%, transparent);
+		backdrop-filter: blur(18px);
+	}
+	.admin-main {
+		width: min(calc(100% - 2rem), 88rem);
+		margin: 0 auto;
+		padding: 1.5rem 0 2.5rem;
+	}
+	@media (max-width: 768px) {
+		.admin-main {
+			width: min(calc(100% - 1rem), 88rem);
+			padding-top: 1rem;
+		}
+	}
+</style>
