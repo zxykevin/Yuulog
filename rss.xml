@@ -1,4 +1,126 @@
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>星轨手札</title><description>德国留学、日本旅行与技术折腾记录</description><link>https://yuulog.org/</link><language>zh_CN</language><item><title>从零搭建 VPS 节点</title><link>https://yuulog.org/posts/build-vps-node-from-zero/</link><guid isPermaLink="true">https://yuulog.org/posts/build-vps-node-from-zero/</guid><description>记录一次使用 Vultr 日本 VPS、Ubuntu 22.04、Xray-core 与 VLESS Reality Vision 搭建个人代理节点的完整流程。</description><pubDate>Sun, 10 May 2026 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;从零搭建 VPS 节点&lt;/h1&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>星轨手札</title><description>德国留学、日本旅行与技术折腾记录</description><link>https://yuulog.org/</link><language>zh_CN</language><item><title>从大阪到东京：关西、中部、关东动漫圣地巡礼路线复盘</title><link>https://yuulog.org/posts/japan-anime-pilgrimage-osaka-kyoto-numazu-tokyo/</link><guid isPermaLink="true">https://yuulog.org/posts/japan-anime-pilgrimage-osaka-kyoto-numazu-tokyo/</guid><description>复盘一次从德国出发、经中国转机入境大阪，再一路经过奈良、京都、宇治、丰乡、沼津和东京的日本自由行与动漫巡礼路线。</description><pubDate>Wed, 13 May 2026 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;从大阪到东京：关西、中部、关东动漫圣地巡礼路线复盘&lt;/h1&gt;
+&lt;p&gt;这次日本行的主线很清楚：从德国法兰克福出发，经上海转机入境大阪，再从关西一路向东，完成京都、宇治、丰乡、沼津、东京的动漫巡礼。原计划里有河口湖，但因为大雪和交通不确定，临时改去沼津，结果反而成了全程最高光的一段。&lt;/p&gt;
+&lt;p&gt;最终实际路线大致是：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;FRA 法兰克福 -&amp;gt; PVG 上海 -&amp;gt; KIX 大阪关西
+大阪 -&amp;gt; 奈良 -&amp;gt; 京都 -&amp;gt; 宇治 -&amp;gt; 丰乡 -&amp;gt; 沼津 -&amp;gt; 东京
+HND 羽田 -&amp;gt; PEK 北京 -&amp;gt; FRA 法兰克福
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;1. 出发和入境：德国经中国到大阪&lt;/h2&gt;
+&lt;p&gt;去程不是德国直飞日本，而是法兰克福到上海，再从上海飞大阪关西机场。上海中转时间大约 20 小时，所以不是普通短转机，而是可以入境中国、取行李、第二天重新托运的长中转。&lt;/p&gt;
+&lt;p&gt;这个路线的关键点是行李。虽然航程连着买，但行李实际只到上海，需要在上海入境后取出，第二天再重新托运到大阪。流程大概是：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;法兰克福值机，拿 FRA -&amp;gt; PVG 和 PVG -&amp;gt; KIX 登机牌。&lt;/li&gt;
+&lt;li&gt;行李托运到上海。&lt;/li&gt;
+&lt;li&gt;上海入境中国，取托运行李。&lt;/li&gt;
+&lt;li&gt;休息或短暂停留。&lt;/li&gt;
+&lt;li&gt;第二天重新值机、重新托运行李。&lt;/li&gt;
+&lt;li&gt;抵达 KIX 后入境日本。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;到达关西机场后，先处理最基础的几件事：入境、取行李、办或启用 ICOCA、取现金。我当时取了 50,000 日元现金。日本大城市刷卡和电子支付已经很普遍，但巡礼点、小店、储物柜、景区和乡下交通，现金仍然能救命。&lt;/p&gt;
+&lt;h2&gt;2. Day 1：大阪入境日&lt;/h2&gt;
+&lt;p&gt;第一天路线很简单：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;KIX 关西机场 -&amp;gt; 大阪市区 -&amp;gt; 心斋桥 / 道顿堀
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这一天不要排太满。第一次落地日本，真正要完成的是入境、取现、交通卡、到酒店、适应日本交通和街道节奏。晚上去心斋桥、道顿堀刚好：招牌密集、餐饮多、夜景强，很有“终于到日本了”的落地感。&lt;/p&gt;
+&lt;p&gt;大阪更适合作为缓冲站，而不是一上来就暴走。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/001.jpg&quot; alt=&quot;大阪道顿堀夜晚的格力高广告牌&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;落地后的第一晚，道顿堀和心斋桥把“终于到日本了”的感觉一下子拉满。&lt;/em&gt;&lt;/p&gt;
+&lt;h2&gt;3. Day 2：大阪、奈良、京都&lt;/h2&gt;
+&lt;p&gt;第二天是经典关西移动：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;大阪 -&amp;gt; 奈良 -&amp;gt; 京都
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;上午可以简单看大阪城或大阪市区，中段去奈良公园和东大寺，晚上到京都。奈良适合作为大阪到京都之间的半日过渡，路线顺，节奏也刚好从大阪的商业感切到古都和自然氛围。&lt;/p&gt;
+&lt;p&gt;这一天的重点不是“刷满所有景点”，而是完成城市切换。拖着行李时尤其要提前想好寄存，不要把自己变成移动仓库。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/002.jpg&quot; alt=&quot;大阪城天守阁&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;上午从大阪城开始，把关西第一段行程的城市感建立起来。&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/003.jpg&quot; alt=&quot;奈良公园里喂鹿&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;奈良适合夹在大阪和京都之间，节奏会自然慢下来。&lt;/em&gt;&lt;/p&gt;
+&lt;h2&gt;4. Day 3：京都和宇治&lt;/h2&gt;
+&lt;p&gt;第三天是关西段核心：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;伏见稻荷 -&amp;gt; 清水寺 / 二年坂三年坂 / 八坂神社 -&amp;gt; 宇治 -&amp;gt; 京都商店街
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;京都热门点一定要早起。伏见稻荷如果晚去，千本鸟居基本就是人挤人；早上去才能拍到比较干净的画面。清水寺、二年坂三年坂和八坂神社也一样，越晚人越多。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/004.jpg&quot; alt=&quot;伏见稻荷的千本鸟居&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;早起去伏见稻荷的回报很直接：鸟居之间终于有能呼吸的空隙。&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/005.jpg&quot; alt=&quot;清水寺舞台与京都城市远景&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;清水寺这一段基本靠走，天气和人流都会直接影响体验。&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;下午去宇治，是《響け！ユーフォニアム》的核心巡礼线。宇治桥、宇治川、平等院、抹茶甜品店、京吹取景地，都很适合慢慢走。宇治和京都市区的气质完全不同：城市更小，河边更安静，作品记忆和现实地点叠在一起的感觉更强。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/006.jpg&quot; alt=&quot;宇治的京阿尼作品展示&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;宇治不只是观光点，更像是把京阿尼作品记忆放回现实街道里。&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/007.jpg&quot; alt=&quot;宇治抹茶芭菲和抹茶&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;抹茶甜品不是单纯补给，它会和宇治这个地点本身绑定在一起。&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;晚上回京都后，可以补玉子市场相关商店街。这样 Day 3 实际上变成了“京都传统观光 + 京阿尼作品巡礼 + 宇治京吹核心巡礼”。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/008.jpg&quot; alt=&quot;京都商店街里的玉子市场角色牌&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;玉子市场相关商店街更像隐藏支线，适合放在京都夜晚收尾。&lt;/em&gt;&lt;/p&gt;
+&lt;h2&gt;5. Day 4：丰乡小学，然后临时改道沼津&lt;/h2&gt;
+&lt;p&gt;第四天原计划很硬：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;京都 -&amp;gt; 丰乡小学校旧校舍群 -&amp;gt; 河口湖
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;丰乡小学是《K-ON!》非常重要的巡礼地。它交通不算方便，对普通游客吸引力没那么强，但对作品粉丝非常值。校舍、楼梯、部室、周边小店，都有一种不是商业景点、而是真正为了作品走到这里的感觉。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/009.jpg&quot; alt=&quot;丰乡小学校旧校舍里的茶会布置&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;丰乡小学的魅力在于它不像普通景点，更像把作品里的部室空气保留下来了。&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;问题出在后半段：河口湖大雪，交通不稳定。冬天去富士山周边，最大的风险不只是看不到山，而是进不去、出不来，或者后面东京行程被连带打乱。&lt;/p&gt;
+&lt;p&gt;最后我没有硬冲河口湖，而是改去沼津。这个决定非常正确。&lt;/p&gt;
+&lt;p&gt;沼津作为替代方案有几个优势：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;靠近三岛，能接东海道新干线和 JR 干线。&lt;/li&gt;
+&lt;li&gt;仍然有看富士山的机会。&lt;/li&gt;
+&lt;li&gt;是 LoveLive! Sunshine!! 核心圣地。&lt;/li&gt;
+&lt;li&gt;有骏河湾和海鲜。&lt;/li&gt;
+&lt;li&gt;第二天进东京比从河口湖脱困稳定得多。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;晚上在沼津吃了魚がし鮨本店，比纯游客区回转寿司更有地方鱼获特色，也成了这次临时改线后的惊喜。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/010.jpg&quot; alt=&quot;沼津海鲜丼&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;临时改到沼津之后，骏河湾海鲜成了第一份补偿。&lt;/em&gt;&lt;/p&gt;
+&lt;h2&gt;6. Day 5：沼津 LoveLive! Sunshine!! 巡礼&lt;/h2&gt;
+&lt;p&gt;第五天是整趟旅行最惊喜的一天：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;沼津 -&amp;gt; 三津 / 淡岛方向 -&amp;gt; 骏河湾富士山 -&amp;gt; 东京
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;沼津的巡礼密度很高。市区、三津、淡岛、水族馆、港口、LoveLive 痛船、骏河湾海岸线，都和 LoveLive! Sunshine!! 绑定得很深。&lt;/p&gt;
+&lt;p&gt;这一天最有记忆点的是骏河湾、富士山和痛船同框。原本河口湖看富士山失败，但沼津给了另一种更有个人主题的富士山：不是单纯风景，而是“海 + 富士山 + 动漫巡礼”的组合。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/014.jpg&quot; alt=&quot;骏河湾、富士山与 LoveLive 痛船同框&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;这张就是河口湖取消后的神展开：富士山、骏河湾、LoveLive 痛船全都赶上了。&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;下午或晚上从沼津去东京也很顺：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;沼津 -&amp;gt; 三岛 -&amp;gt; 东京
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这就是为什么沼津是高质量替代方案。它不是随便找个地方避险，而是同时保住了富士山、巡礼、海鲜和后续交通。&lt;/p&gt;
+&lt;h2&gt;7. 东京阶段：二次元主战场&lt;/h2&gt;
+&lt;p&gt;东京阶段的核心区域包括：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;秋叶原：周边、手办、CD、BD、二次元店、中古店。&lt;/li&gt;
+&lt;li&gt;下北泽：孤独摇滚和现实乐队文化氛围。&lt;/li&gt;
+&lt;li&gt;池袋：二次元商业区和动漫店。&lt;/li&gt;
+&lt;li&gt;涩谷：现代东京感、夜景、SHIBUYA SKY。&lt;/li&gt;
+&lt;li&gt;新宿：城市密度、交通枢纽和夜景。&lt;/li&gt;
+&lt;li&gt;台场：海湾景观和商业设施。&lt;/li&gt;
+&lt;li&gt;浅草：传统东京观光。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;秋叶原适合第一次朝圣式体验，但不要低估它的时间黑洞属性。下北泽则更适合喜欢乐队番、MyGO!!!!!、Ave Mujica、Girls Band Cry、K-ON! 这类作品的人，它的现实音乐场景和动画舞台感是连在一起的。&lt;/p&gt;
+&lt;p&gt;东京还很适合用长焦拍街景：坡道、铁路、十字路口、城市压缩感，都能拍出很干净的画面。《你的名字。》相关地点和东京坡道巡礼，也很适合放进东京段。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/011.jpg&quot; alt=&quot;东京夜景与东京塔&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;SHIBUYA SKY 或类似高处视角很适合第一次东京旅行，用来建立城市尺度。&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/012.jpg&quot; alt=&quot;赤羽桥站前的东京塔夜景&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;东京塔近距离夜景更像城市巡礼的注脚，路牌和塔同框很有现场感。&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/013.jpg&quot; alt=&quot;台场独角兽高达&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;台场适合作为东京段的海湾支线，独角兽高达是很稳定的二次元地标。&lt;/em&gt;&lt;/p&gt;
+&lt;h2&gt;8. 交通和行李经验&lt;/h2&gt;
+&lt;p&gt;ICOCA 很实用。它能覆盖大阪、京都、奈良、JR 普通线路，到了东京也能继续刷。第一次日本多城市自由行，IC 卡能减少大量买票和换乘时的心理成本。&lt;/p&gt;
+&lt;p&gt;长距离移动要灵活。大阪、京都、名古屋、三岛、东京这些大动脉问题不大，真正影响行程的是冬天山区和富士山周边天气。票不一定是最大问题，天气和交通中断才是。&lt;/p&gt;
+&lt;p&gt;行李不要拖去所有巡礼点。丰乡、宇治、沼津这种地方，轻装体验会好很多。退房后跨城市移动，优先考虑酒店寄存、车站 coin locker 或可靠店铺寄存。&lt;/p&gt;
+&lt;h2&gt;9. 可复用行程模板&lt;/h2&gt;
+&lt;p&gt;如果下次复刻类似路线，可以这样安排：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;Day 1  大阪落地，心斋桥 / 道顿堀
+Day 2  大阪 -&amp;gt; 奈良 -&amp;gt; 京都
+Day 3  京都早起观光 -&amp;gt; 宇治京吹巡礼
+Day 4  京都 -&amp;gt; 丰乡 K-ON! -&amp;gt; 静冈方向
+Day 5  沼津 LoveLive! Sunshine!! -&amp;gt; 东京
+Day 6  秋叶原 / 池袋 / 下北泽
+Day 7  涩谷 / 新宿 / 台场 / 浅草
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;冬天如果安排河口湖，一定提前准备替代方案。沼津、三岛、静冈一线就是很好的备选：交通稳、接东京方便，而且富士山和动漫巡礼都有。&lt;/p&gt;
+&lt;h2&gt;10. 一句话总结&lt;/h2&gt;
+&lt;p&gt;这次旅行最成功的地方，不是完全按原计划执行，而是在河口湖大雪时果断改线，把一次可能失败的富士山行程，变成了沼津、骏河湾、LoveLive 痛船、海鲜寿司和富士山同框的高质量巡礼。&lt;/p&gt;
+</content:encoded></item><item><title>从零搭建 VPS 节点</title><link>https://yuulog.org/posts/build-vps-node-from-zero/</link><guid isPermaLink="true">https://yuulog.org/posts/build-vps-node-from-zero/</guid><description>记录一次使用 Vultr 日本 VPS、Ubuntu 22.04、Xray-core 与 VLESS Reality Vision 搭建个人代理节点的完整流程。</description><pubDate>Sun, 10 May 2026 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;从零搭建 VPS 节点&lt;/h1&gt;
 &lt;p&gt;这篇记录的是我实际搭建一套自用 VPS 节点的流程：从购买 Vultr 服务器，到安装 Xray-core，再到手机端用 ClashBox / v2rayNG 连通测试。文中所有 IP、UUID、公钥、端口等敏感信息都用占位符替代，照着做时请换成你自己服务器上生成的配置。&lt;/p&gt;
 &lt;h2&gt;1. 购买 VPS&lt;/h2&gt;
 &lt;p&gt;我用的是 Vultr，最后选择的配置是：&lt;/p&gt;
@@ -165,6 +287,623 @@ pkg install openssh
 &lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;它的优点是不用域名，配置流程相对直接，手机端和电脑端都能接入。真正需要注意的地方主要有三个：不要泄露节点链接，不要把真实 IP / UUID / 公钥发到公开页面，客户端一定要使用支持 Reality 和 Vision 的内核。&lt;/p&gt;
 &lt;p&gt;搭好之后，建议把完整节点信息保存在本地密码管理器里；公开写博客时只记录流程和排错经验，敏感字段统一替换成占位符。&lt;/p&gt;
+</content:encoded></item><item><title>从零给 Mizuki 添加评论区</title><link>https://yuulog.org/posts/add-comments-to-mizuki-from-scratch/</link><guid isPermaLink="true">https://yuulog.org/posts/add-comments-to-mizuki-from-scratch/</guid><description>记录如何给已有的 Mizuki 博客从零接入评论区：部署 yuulog-comments、配置 Turnstile、连接前端，并启用评论审核后台。</description><pubDate>Sun, 17 May 2026 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;从零给 Mizuki 添加评论区&lt;/h1&gt;
+&lt;p&gt;这篇文章记录的是我怎样给已经能正常访问的 &lt;code&gt;Mizuki&lt;/code&gt; 博客，从零补上一套评论系统。&lt;/p&gt;
+&lt;p&gt;目标不是重新部署整个博客，而是把下面几件事接起来：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;让文章页底部出现可提交的评论框。&lt;/li&gt;
+&lt;li&gt;用 Cloudflare Turnstile 做人机验证。&lt;/li&gt;
+&lt;li&gt;用独立后端保存评论数据。&lt;/li&gt;
+&lt;li&gt;留出一个可视化后台，后续可以查看和处理评论。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;我这里用到的是：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;博客前端：&lt;code&gt;Mizuki&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;评论后端：&lt;code&gt;yuulog-comments&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;前端部署平台：Vercel&lt;/li&gt;
+&lt;li&gt;后端部署平台：Cloudflare Workers + D1&lt;/li&gt;
+&lt;li&gt;包管理器：&lt;code&gt;pnpm&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;本地环境：Windows PowerShell&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;如果你已经把 &lt;code&gt;Mizuki&lt;/code&gt; 部署好了，这篇文章就是从“没有评论区”到“评论区可用”的补装流程。前端如果不是部署在 Vercel，只要你能配置环境变量并重新发布，整体思路也一样。&lt;/p&gt;
+&lt;h2&gt;1. 先理解评论区由什么组成&lt;/h2&gt;
+&lt;h3&gt;1.1 前端这一侧要做什么&lt;/h3&gt;
+&lt;p&gt;在 &lt;code&gt;Mizuki&lt;/code&gt; 里，评论区并不是凭空出现的，主要依赖这些内容：&lt;/p&gt;
+&lt;p&gt;它的关键文件有：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;package.json&lt;/code&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pnpm dev&lt;/code&gt;：本地开发&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pnpm build&lt;/code&gt;：生产构建&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pnpm preview&lt;/code&gt;：预览构建结果&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;.env.example&lt;/code&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;PUBLIC_COMMENTS_API_BASE_URL&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;PUBLIC_TURNSTILE_SITE_KEY&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;src/components/comments/CommentBox.astro&lt;/code&gt;
+&lt;ul&gt;
+&lt;li&gt;真正调用评论后端接口的评论组件&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;public/admin/index.html&lt;/code&gt;
+&lt;ul&gt;
+&lt;li&gt;独立的评论审核后台页面，部署后通过 &lt;code&gt;/admin/&lt;/code&gt; 访问&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;src/pages/posts/[...slug].astro&lt;/code&gt;
+&lt;ul&gt;
+&lt;li&gt;文章页会在正文后渲染评论组件&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;需要特别注意：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;当前评论组件不是旧的 &lt;code&gt;commentConfig&lt;/code&gt; 开关控制，而是直接挂在文章页上。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;CommentBox.astro&lt;/code&gt; 默认会读取：
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;PUBLIC_COMMENTS_API_BASE_URL&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;PUBLIC_TURNSTILE_SITE_KEY&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;如果 &lt;code&gt;PUBLIC_TURNSTILE_SITE_KEY&lt;/code&gt; 没配，前端会直接提示“评论验证未配置，暂时无法提交评论”。&lt;/li&gt;
+&lt;li&gt;当前后台页 &lt;code&gt;public/admin/index.html&lt;/code&gt; 里的 &lt;code&gt;API_BASE_URL&lt;/code&gt; 还是直接写成了 &lt;code&gt;https://comments.yuulog.org&lt;/code&gt;。如果你的评论后端域名不是这个地址，也要同步改这里，否则 &lt;code&gt;/admin/&lt;/code&gt; 页面会去请求错误的后端。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;1.2 后端这一侧要做什么&lt;/h3&gt;
+&lt;p&gt;评论本身不能只靠静态页面完成，所以还需要一个后端来接收、保存和管理评论。这里我用的是基于 Cloudflare Workers、TypeScript 和 D1 的 &lt;code&gt;yuulog-comments&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;它的关键文件有：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;wrangler.toml&lt;/code&gt;
+&lt;ul&gt;
+&lt;li&gt;Worker 名称、D1 数据库绑定、必需 secrets&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;scripts/deploy-backend.ps1&lt;/code&gt;
+&lt;ul&gt;
+&lt;li&gt;一键部署脚本&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;migrations/&lt;/code&gt;
+&lt;ul&gt;
+&lt;li&gt;数据库迁移文件&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;src/utils/cors.ts&lt;/code&gt;
+&lt;ul&gt;
+&lt;li&gt;前端域名白名单&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;src/routes/createComment.ts&lt;/code&gt;
+&lt;ul&gt;
+&lt;li&gt;评论提交逻辑&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;src/routes/adminComments.ts&lt;/code&gt;
+&lt;ul&gt;
+&lt;li&gt;后台查询和审核接口&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;后端提供的主要接口：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;GET    /api/comments?path=/xxx
+POST   /api/comments
+GET    /api/admin/comments?status=approved
+PATCH  /api/admin/comments/:id/status
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;需要特别注意：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;正式环境必须配置 &lt;code&gt;TURNSTILE_SECRET_KEY&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;管理接口依赖 &lt;code&gt;ADMIN_TOKEN&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;当前 &lt;code&gt;src/utils/cors.ts&lt;/code&gt; 里的生产白名单还是示例域名：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;const ALLOWED_ORIGINS = new Set([
+  &quot;https://example.com&quot;,
+  &quot;https://www.example.com&quot;,
+  &quot;http://localhost:4321&quot;,
+  &quot;http://localhost:8787&quot;,
+]);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;如果你不把自己的前端域名加进去，前端虽然能访问页面，但浏览器会拦截评论接口请求。&lt;/p&gt;
+&lt;h2&gt;2. 开始前要准备什么&lt;/h2&gt;
+&lt;h3&gt;2.1 账号&lt;/h3&gt;
+&lt;p&gt;你至少需要：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;一个 Cloudflare 账号&lt;/li&gt;
+&lt;li&gt;一个 Vercel 账号&lt;/li&gt;
+&lt;li&gt;一个 GitHub 账号&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;2.2 本机软件&lt;/h3&gt;
+&lt;p&gt;建议先安装：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Node.js&lt;/li&gt;
+&lt;li&gt;pnpm&lt;/li&gt;
+&lt;li&gt;Git&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;本项目已经指定了 pnpm 版本：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;后端：&lt;code&gt;pnpm@11.0.9&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;前端：&lt;code&gt;pnpm@10.22.0&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;如果你安装了 Corepack，通常可以这样启用 pnpm：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;corepack enable
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;2.3 域名建议&lt;/h3&gt;
+&lt;p&gt;为了后续配置清楚，推荐准备两个域名：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;博客前端：&lt;code&gt;https://yuulog.org&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;评论后端：&lt;code&gt;https://comments.yuulog.org&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这样职责会非常清晰。&lt;/p&gt;
+&lt;p&gt;如果你暂时还没有自定义域名，也可以先用：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Vercel 自动域名&lt;/li&gt;
+&lt;li&gt;Cloudflare Workers 自动域名&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;但等你换成正式域名时，需要同步修改前端环境变量和后端 CORS 白名单。&lt;/p&gt;
+&lt;h3&gt;2.4 Turnstile&lt;/h3&gt;
+&lt;p&gt;评论系统需要 Cloudflare Turnstile 的两类 key：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;site key&lt;/code&gt;
+&lt;ul&gt;
+&lt;li&gt;给前端使用&lt;/li&gt;
+&lt;li&gt;放在 &lt;code&gt;PUBLIC_TURNSTILE_SITE_KEY&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;secret key&lt;/code&gt;
+&lt;ul&gt;
+&lt;li&gt;给后端使用&lt;/li&gt;
+&lt;li&gt;放在 &lt;code&gt;TURNSTILE_SECRET_KEY&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;这两个值不是一回事，不能互换。&lt;/p&gt;
+&lt;h2&gt;3. 推荐的接入顺序&lt;/h2&gt;
+&lt;p&gt;第一次给博客加评论区时，建议按这个顺序来：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;先部署评论后端&lt;/li&gt;
+&lt;li&gt;拿到后端公开地址&lt;/li&gt;
+&lt;li&gt;再把前端评论组件接上&lt;/li&gt;
+&lt;li&gt;最后联调评论框和后台&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;原因很简单：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;前端需要知道评论 API 地址&lt;/li&gt;
+&lt;li&gt;前端需要知道 Turnstile 的 &lt;code&gt;site key&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;后端先上线后，前端环境变量才能一次填完整&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;4. 第一步：先把评论后端准备好&lt;/h2&gt;
+&lt;h3&gt;4.1 进入后端仓库&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;cd path\to\yuulog-comments
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;4.2 登录 Cloudflare&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;pnpm exec wrangler login
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;命令执行后浏览器会打开授权页面，按提示登录即可。&lt;/p&gt;
+&lt;p&gt;登录成功后，可以验证一下：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;pnpm exec wrangler whoami
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;4.3 准备 Turnstile secret&lt;/h3&gt;
+&lt;p&gt;你有三种方式，任选一种。&lt;/p&gt;
+&lt;p&gt;方式 A：临时环境变量&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$env:TURNSTILE_SECRET_KEY = &quot;你的 Turnstile secret key&quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;方式 B：创建本地文件 &lt;code&gt;secrets.production.json&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;{
+  &quot;TURNSTILE_SECRET_KEY&quot;: &quot;你的 Turnstile secret key&quot;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;方式 C：什么都不提前写，等部署脚本执行时在终端里输入。&lt;/p&gt;
+&lt;p&gt;推荐新手用方式 B，因为：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;以后重复部署更省事&lt;/li&gt;
+&lt;li&gt;这个文件已经被 &lt;code&gt;.gitignore&lt;/code&gt; 忽略，不会误提交&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;4.4 修改 CORS 白名单&lt;/h3&gt;
+&lt;p&gt;打开：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;src/utils/cors.ts
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;把示例域名替换成你的真实前端域名，例如：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;const ALLOWED_ORIGINS = new Set([
+  &quot;https://yuulog.org&quot;,
+  &quot;https://www.yuulog.org&quot;,
+  &quot;http://localhost:4321&quot;,
+  &quot;http://localhost:8787&quot;,
+]);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;如果你还在测试 Vercel 临时域名，也可以把它暂时加入白名单，例如：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&quot;https://your-project.vercel.app&quot;,
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;4.5 执行一键部署&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;pnpm deploy:backend
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这个脚本会自动完成：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;安装依赖&lt;/li&gt;
+&lt;li&gt;检查 Cloudflare 登录状态&lt;/li&gt;
+&lt;li&gt;如果 D1 数据库不存在，则自动创建&lt;/li&gt;
+&lt;li&gt;把真实的 &lt;code&gt;database_id&lt;/code&gt; 写回 &lt;code&gt;wrangler.toml&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;自动生成 &lt;code&gt;ADMIN_TOKEN&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;上传缺失的 Worker secrets&lt;/li&gt;
+&lt;li&gt;执行远程数据库迁移&lt;/li&gt;
+&lt;li&gt;部署 Worker&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;第一次部署成功后，你会得到：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;一个 Worker 地址&lt;/li&gt;
+&lt;li&gt;一个 D1 数据库&lt;/li&gt;
+&lt;li&gt;一个本地保存的 &lt;code&gt;ADMIN_TOKEN&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;4.6 记住这两个值&lt;/h3&gt;
+&lt;p&gt;后面会用到：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Worker 的公开地址&lt;br /&gt;
+例如：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code&gt;https://comments.yuulog.org
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;ADMIN_TOKEN&lt;/code&gt;&lt;br /&gt;
+它会被保存在：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code&gt;secrets.production.json
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;不要把它提交到 Git，也不要发给别人。&lt;/p&gt;
+&lt;h2&gt;5. 第二步：本地验证后端是否正常&lt;/h2&gt;
+&lt;h3&gt;5.1 检查类型&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;pnpm typecheck
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;5.2 本地运行&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;pnpm db:migrate:local
+pnpm dev
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;默认开发地址一般是：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;http://localhost:8787
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;5.3 本地开发时的特殊行为&lt;/h3&gt;
+&lt;p&gt;如果你在本地没有设置 &lt;code&gt;TURNSTILE_SECRET_KEY&lt;/code&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Worker 会在 &lt;code&gt;localhost&lt;/code&gt; 开发环境跳过 Turnstile 校验&lt;/li&gt;
+&lt;li&gt;这样便于你先调通前后端&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;但正式环境不会跳过，生产环境一定要配置 &lt;code&gt;TURNSTILE_SECRET_KEY&lt;/code&gt;。&lt;/p&gt;
+&lt;h3&gt;5.4 用浏览器或接口工具测试&lt;/h3&gt;
+&lt;p&gt;你可以先访问：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;GET /api/comments?path=/posts/example/
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;期望返回：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;{
+  &quot;ok&quot;: true,
+  &quot;comments&quot;: []
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;6. 第三步：把评论区接进前端&lt;/h2&gt;
+&lt;h3&gt;6.1 进入前端仓库&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;cd path\to\Mizuki
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;6.2 创建 &lt;code&gt;.env&lt;/code&gt;&lt;/h3&gt;
+&lt;p&gt;从 &lt;code&gt;.env.example&lt;/code&gt; 复制一份：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;Copy-Item .env.example .env
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;然后至少填好这两个值：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;PUBLIC_COMMENTS_API_BASE_URL=https://comments.yuulog.org
+PUBLIC_TURNSTILE_SITE_KEY=你的 Turnstile site key
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;如果你暂时不用内容分离：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;ENABLE_CONTENT_SYNC=false
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;6.3 确认文章页会挂载评论区&lt;/h3&gt;
+&lt;p&gt;当前项目里，文章页已经在正文后引入了评论组件：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;src/pages/posts/[...slug].astro
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;其中会渲染：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&amp;lt;CommentBox /&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;如果你是在别的 Astro 博客里照着改，核心动作也是一样：把评论组件放到文章正文之后，让每一篇文章都能拿到自己的评论区。&lt;/p&gt;
+&lt;h3&gt;6.4 修改站点域名&lt;/h3&gt;
+&lt;p&gt;打开：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;src/config.ts
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;确认：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;siteURL: &quot;https://yuulog.org/&quot;,
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这会影响：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;sitemap&lt;/li&gt;
+&lt;li&gt;canonical URL&lt;/li&gt;
+&lt;li&gt;SEO 相关输出&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;6.5 本地安装和预览&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;pnpm install
+pnpm dev
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;默认开发地址通常是：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;http://localhost:4321
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;打开任意文章页，确认页面底部能看到评论区。&lt;/p&gt;
+&lt;h3&gt;6.6 本地构建一次&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;pnpm build
+pnpm preview
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这样做的意义是：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;提前发现构建时报错&lt;/li&gt;
+&lt;li&gt;确认生产模式下页面也能正常生成&lt;/li&gt;
+&lt;li&gt;避免把问题拖到 Vercel 上才看到&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;7. 第四步：把评论区改动发布出去&lt;/h2&gt;
+&lt;p&gt;如果你的博客还没部署，可以按下面步骤首次发布；如果博客本来就已经在线，只需要补环境变量并重新部署即可。&lt;/p&gt;
+&lt;h3&gt;7.1 首次部署时连接 GitHub 仓库&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;打开 Vercel&lt;/li&gt;
+&lt;li&gt;选择 &lt;code&gt;Import Git Repository&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;选择你的 &lt;code&gt;Mizuki&lt;/code&gt; 仓库&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;7.2 检查构建配置&lt;/h3&gt;
+&lt;p&gt;这个仓库已经有 &lt;code&gt;vercel.json&lt;/code&gt;，默认配置就是：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Framework：Astro&lt;/li&gt;
+&lt;li&gt;Install Command：&lt;code&gt;pnpm install&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Build Command：&lt;code&gt;pnpm build&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Output Directory：&lt;code&gt;dist&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;通常不需要你再改。&lt;/p&gt;
+&lt;h3&gt;7.3 在 Vercel 添加环境变量&lt;/h3&gt;
+&lt;p&gt;至少添加：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;PUBLIC_COMMENTS_API_BASE_URL=https://comments.yuulog.org
+PUBLIC_TURNSTILE_SITE_KEY=你的 Turnstile site key
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;如果你没有启用内容分离，可以继续保持：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;ENABLE_CONTENT_SYNC=false
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;如果你以后启用内容分离，再额外配置：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;ENABLE_CONTENT_SYNC=true
+CONTENT_REPO_URL=你的内容仓库地址
+CONTENT_DIR=./content
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;7.4 触发首次部署&lt;/h3&gt;
+&lt;p&gt;点击 &lt;code&gt;Deploy&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;部署成功后，Vercel 会给你一个访问地址。&lt;br /&gt;
+如果你要绑定正式域名，再在 Vercel 项目里配置自定义域名。&lt;/p&gt;
+&lt;h2&gt;8. 第五步：把评论区真正接通&lt;/h2&gt;
+&lt;p&gt;这一步是很多新手最容易漏的。&lt;/p&gt;
+&lt;h3&gt;8.1 前端要指向正确的后端&lt;/h3&gt;
+&lt;p&gt;确认 Vercel 环境变量：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;PUBLIC_COMMENTS_API_BASE_URL=https://comments.yuulog.org
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;8.2 后端要允许正确的前端域名&lt;/h3&gt;
+&lt;p&gt;确认后端 &lt;code&gt;src/utils/cors.ts&lt;/code&gt; 包含：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&quot;https://yuulog.org&quot;,
+&quot;https://www.yuulog.org&quot;,
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;如果你现在实际访问的是 Vercel 临时域名，也要把临时域名一起加入白名单。&lt;/p&gt;
+&lt;h3&gt;8.3 改了 CORS 后要重新部署后端&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;cd path\to\yuulog-comments
+pnpm deploy:backend
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;8.4 改了前端环境变量后要重新部署前端&lt;/h3&gt;
+&lt;p&gt;在 Vercel 中重新部署一次，或者重新推送代码触发部署。&lt;/p&gt;
+&lt;h2&gt;9. 接入完成后怎么验收&lt;/h2&gt;
+&lt;h3&gt;9.1 验证页面加载&lt;/h3&gt;
+&lt;p&gt;打开一篇真实文章页，确认：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;页面能打开&lt;/li&gt;
+&lt;li&gt;底部能看到评论区&lt;/li&gt;
+&lt;li&gt;Turnstile 人机验证能加载&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;9.2 验证评论读取&lt;/h3&gt;
+&lt;p&gt;如果还没有评论，页面应显示：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;还没有评论，来留下第一条吧。
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这说明前端已经成功调用：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;GET /api/comments
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;9.3 验证评论提交&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;填昵称&lt;/li&gt;
+&lt;li&gt;填评论内容&lt;/li&gt;
+&lt;li&gt;完成 Turnstile&lt;/li&gt;
+&lt;li&gt;点击提交&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;当前后端代码中的默认评论状态是：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;const DEFAULT_COMMENT_STATUS: CommentStatus = &quot;approved&quot;;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;因此评论提交后理论上会立刻显示。&lt;br /&gt;
+不过接口返回文案仍是“评论已提交，等待审核”，这是当前实现中的文案和状态不完全一致，后续如果你想改成真正审核流，可以把默认状态改成 &lt;code&gt;pending&lt;/code&gt;。&lt;/p&gt;
+&lt;h3&gt;9.4 验证后台接口&lt;/h3&gt;
+&lt;p&gt;用 &lt;code&gt;ADMIN_TOKEN&lt;/code&gt; 调接口：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;GET /api/admin/comments?status=approved
+Authorization: Bearer &amp;lt;ADMIN_TOKEN&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;如果能返回评论列表，说明：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Worker 正常&lt;/li&gt;
+&lt;li&gt;D1 正常&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ADMIN_TOKEN&lt;/code&gt; 正常&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;9.5 使用可视化后台页面&lt;/h3&gt;
+&lt;p&gt;除了直接调接口，前端仓库还自带了一个独立后台页：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;https://你的博客域名/admin/
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这个页面对应的源文件是：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;public/admin/index.html
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;第一次打开时，你会先看到一个空后台页。页面会要求输入 &lt;code&gt;ADMIN_TOKEN&lt;/code&gt;，并显示当前是否已经保存 token、API 是否已经连接。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../../assets/posts/deployment-admin-desktop.png&quot; alt=&quot;后台首页，尚未输入 ADMIN_TOKEN&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;手机端布局也已经做了适配，按钮会自动换行，日常临时审核也能直接使用。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../../assets/posts/deployment-admin-mobile.png&quot; alt=&quot;后台页面的移动端布局&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;实际使用步骤：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;打开 &lt;code&gt;/admin/&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;把部署脚本生成的 &lt;code&gt;ADMIN_TOKEN&lt;/code&gt; 粘贴进去&lt;/li&gt;
+&lt;li&gt;点击 &lt;code&gt;保存 token&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;等页面右上角的 API 状态从“待连接”变成“已连接”&lt;/li&gt;
+&lt;li&gt;用状态筛选查看 &lt;code&gt;pending&lt;/code&gt;、&lt;code&gt;approved&lt;/code&gt;、&lt;code&gt;spam&lt;/code&gt;、&lt;code&gt;deleted&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;通过搜索框按作者、评论内容或页面路径筛选&lt;/li&gt;
+&lt;li&gt;在每条评论卡片上点击 &lt;code&gt;通过&lt;/code&gt;、&lt;code&gt;待审核&lt;/code&gt;、&lt;code&gt;垃圾&lt;/code&gt; 或 &lt;code&gt;删除&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;有三点需要提前知道：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;token 会保存在当前浏览器的 &lt;code&gt;localStorage&lt;/code&gt; 里，换浏览器、换设备后需要重新输入。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;清除 token&lt;/code&gt; 只会清掉当前浏览器里的本地保存，不会删除服务端 secret。&lt;/li&gt;
+&lt;li&gt;如果你把评论后端换成别的域名，除了改前端环境变量，还要把 &lt;code&gt;public/admin/index.html&lt;/code&gt; 顶部脚本里的 &lt;code&gt;API_BASE_URL&lt;/code&gt; 一起改掉。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;10. 常见问题排查&lt;/h2&gt;
+&lt;h3&gt;10.1 前端页面有评论框，但加载失败&lt;/h3&gt;
+&lt;p&gt;优先检查：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;PUBLIC_COMMENTS_API_BASE_URL&lt;/code&gt; 是否写对&lt;/li&gt;
+&lt;li&gt;Worker 是否真的已经部署&lt;/li&gt;
+&lt;li&gt;浏览器开发者工具里是否出现 CORS 报错&lt;/li&gt;
+&lt;li&gt;后端 &lt;code&gt;src/utils/cors.ts&lt;/code&gt; 是否加了真实前端域名&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;10.2 评论框显示“评论验证未配置，暂时无法提交评论”&lt;/h3&gt;
+&lt;p&gt;说明前端没有拿到：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;PUBLIC_TURNSTILE_SITE_KEY
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;检查：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;本地 &lt;code&gt;.env&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Vercel 项目环境变量&lt;/li&gt;
+&lt;li&gt;改完后是否重新部署&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;10.3 提交评论时报“人机验证失败”&lt;/h3&gt;
+&lt;p&gt;检查：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;前端用的是不是 &lt;code&gt;site key&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;后端用的是不是同一个 Turnstile 应用对应的 &lt;code&gt;secret key&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;TURNSTILE_SECRET_KEY&lt;/code&gt; 是否已经作为 Worker secret 上传&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;10.4 本地能用，线上不能用&lt;/h3&gt;
+&lt;p&gt;这通常是两个原因之一：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;生产环境缺少 &lt;code&gt;TURNSTILE_SECRET_KEY&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;线上域名不在 CORS 白名单里&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;10.5 重新部署后 D1 数据库不见了&lt;/h3&gt;
+&lt;p&gt;正常情况下不会。&lt;br /&gt;
+这个项目的数据库名固定为：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;yuulog-comments-db
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;部署脚本会优先查找现有数据库，只有不存在时才创建新的。&lt;br /&gt;
+真正需要小心的是不要手动换了数据库名，又忘记迁移数据。&lt;/p&gt;
+&lt;h3&gt;10.6 内容更新了，但前端站点没有自动刷新&lt;/h3&gt;
+&lt;p&gt;如果你启用了“内容仓库分离”，那是另一个独立问题。&lt;br /&gt;
+请看前端仓库：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docs/AUTO_BUILD_TRIGGER.md
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;里面已经写了如何用 Repository Dispatch、Webhook 或定时任务触发重新构建。&lt;/p&gt;
+&lt;h2&gt;11. 最小可行接入清单&lt;/h2&gt;
+&lt;p&gt;如果你只想快速确认自己没漏步骤，可以按这个清单检查：&lt;/p&gt;
+&lt;h3&gt;后端&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;[ ] 已登录 Cloudflare&lt;/li&gt;
+&lt;li&gt;[ ] 已准备 &lt;code&gt;TURNSTILE_SECRET_KEY&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;[ ] 已把真实前端域名加入 &lt;code&gt;src/utils/cors.ts&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;[ ] 已运行 &lt;code&gt;pnpm deploy:backend&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;[ ] 已保存 &lt;code&gt;ADMIN_TOKEN&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;[ ] Worker 地址可访问&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;前端&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;[ ] 已设置 &lt;code&gt;PUBLIC_COMMENTS_API_BASE_URL&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;[ ] 已设置 &lt;code&gt;PUBLIC_TURNSTILE_SITE_KEY&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;[ ] 已确认 &lt;code&gt;siteURL&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;[ ] &lt;code&gt;pnpm build&lt;/code&gt; 成功&lt;/li&gt;
+&lt;li&gt;[ ] 已部署到 Vercel&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;联调&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;[ ] 评论区能加载&lt;/li&gt;
+&lt;li&gt;[ ] Turnstile 能显示&lt;/li&gt;
+&lt;li&gt;[ ] 评论能成功提交&lt;/li&gt;
+&lt;li&gt;[ ] 后台接口能携带 &lt;code&gt;ADMIN_TOKEN&lt;/code&gt; 访问&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;12. 以后维护时怎么操作&lt;/h2&gt;
+&lt;h3&gt;12.1 只改评论区前端页面或样式&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;cd path\to\Mizuki
+pnpm build
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;确认没问题后推送代码，交给 Vercel 自动部署。&lt;/p&gt;
+&lt;h3&gt;12.2 只改评论后端代码&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;cd path\to\yuulog-comments
+pnpm deploy:backend
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;12.3 改了数据库结构&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;新增 migration 文件&lt;/li&gt;
+&lt;li&gt;本地先跑：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code&gt;pnpm db:migrate:local
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ol&gt;
+&lt;li&gt;部署时脚本会自动执行远程 migration：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code&gt;pnpm deploy:backend
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;12.4 换域名&lt;/h3&gt;
+&lt;p&gt;如果你换了前端域名，至少改三处：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;前端 &lt;code&gt;src/config.ts&lt;/code&gt; 的 &lt;code&gt;siteURL&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;前端环境变量里的公开地址&lt;/li&gt;
+&lt;li&gt;后端 &lt;code&gt;src/utils/cors.ts&lt;/code&gt; 的白名单&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;如果你换了后端域名，则至少改：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;前端 &lt;code&gt;PUBLIC_COMMENTS_API_BASE_URL&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Turnstile 后台允许的域名配置&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2&gt;13. 从零接评论区时最容易踩的五个坑&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;把 Turnstile &lt;code&gt;site key&lt;/code&gt; 和 &lt;code&gt;secret key&lt;/code&gt; 填反&lt;/li&gt;
+&lt;li&gt;只配前端变量，忘记后端 CORS&lt;/li&gt;
+&lt;li&gt;只本地 &lt;code&gt;.env&lt;/code&gt; 写了变量，忘记在 Vercel 也写一遍&lt;/li&gt;
+&lt;li&gt;改了环境变量但没有重新部署&lt;/li&gt;
+&lt;li&gt;误以为 &lt;code&gt;pnpm deploy&lt;/code&gt; 和 &lt;code&gt;pnpm deploy:backend&lt;/code&gt; 一样&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;这里最后一个尤其要注意：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pnpm deploy&lt;/code&gt;
+&lt;ul&gt;
+&lt;li&gt;只是普通 &lt;code&gt;wrangler deploy&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pnpm deploy:backend&lt;/code&gt;
+&lt;ul&gt;
+&lt;li&gt;才会自动处理依赖、D1、secrets、migration 和 Worker 部署&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;第一次部署、或者你不确定当前状态时，优先用：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;pnpm deploy:backend
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;14. 参考文件&lt;/h2&gt;
+&lt;h3&gt;评论后端仓库&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;README.md&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;package.json&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;wrangler.toml&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;scripts/deploy-backend.ps1&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;src/utils/cors.ts&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;src/routes/createComment.ts&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;src/routes/adminComments.ts&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;migrations/0001_init.sql&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;migrations/0002_add_comment_email.sql&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;前端仓库&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;.env.example&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;package.json&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;vercel.json&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;astro.config.mjs&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;src/config.ts&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;src/components/comments/CommentBox.astro&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;public/admin/index.html&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;docs/DEPLOYMENT.md&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;docs/AUTO_BUILD_TRIGGER.md&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
 </content:encoded></item><item><title>北京转机中断行李直挂：羽田到北京再回法兰克福的实战攻略</title><link>https://yuulog.org/posts/beijing-stopover-short-check-baggage-guide/</link><guid isPermaLink="true">https://yuulog.org/posts/beijing-stopover-short-check-baggage-guide/</guid><description>复盘一次东京羽田经北京回法兰克福时，在北京中断行李直挂、入境取行李、采购补给、增加第二件托运行李再回德国的完整流程。</description><pubDate>Wed, 13 May 2026 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;北京转机中断行李直挂：羽田到北京再回法兰克福的实战攻略&lt;/h1&gt;
 &lt;p&gt;这篇写的是一次很“留学生实用主义”的回程操作：从东京羽田飞北京，再从北京飞法兰克福。正常国际联程会希望行李从羽田直挂到法兰克福，但我需要在北京入境取行李、采购中国食品和调料、增加第二件托运行李，还要收一个提前下单到北京机场的空气炸锅，所以必须中断直挂。&lt;/p&gt;
 &lt;p&gt;实际路线是：&lt;/p&gt;
@@ -264,128 +1003,6 @@ Please check my baggage only to Beijing, not through to Frankfurt.
 &lt;/code&gt;&lt;/pre&gt;
 &lt;h2&gt;8. 一句话总结&lt;/h2&gt;
 &lt;p&gt;北京中断直挂的本质，是把一次普通国际转机变成“入境中国取行李、补给采购、重新打包、重新出境”的完整流程。它很实用，但一定要有足够中转时间，并且在羽田值机时把行李目的地确认到 PEK。&lt;/p&gt;
-</content:encoded></item><item><title>从大阪到东京：关西、中部、关东动漫圣地巡礼路线复盘</title><link>https://yuulog.org/posts/japan-anime-pilgrimage-osaka-kyoto-numazu-tokyo/</link><guid isPermaLink="true">https://yuulog.org/posts/japan-anime-pilgrimage-osaka-kyoto-numazu-tokyo/</guid><description>复盘一次从德国出发、经中国转机入境大阪，再一路经过奈良、京都、宇治、丰乡、沼津和东京的日本自由行与动漫巡礼路线。</description><pubDate>Wed, 13 May 2026 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;从大阪到东京：关西、中部、关东动漫圣地巡礼路线复盘&lt;/h1&gt;
-&lt;p&gt;这次日本行的主线很清楚：从德国法兰克福出发，经上海转机入境大阪，再从关西一路向东，完成京都、宇治、丰乡、沼津、东京的动漫巡礼。原计划里有河口湖，但因为大雪和交通不确定，临时改去沼津，结果反而成了全程最高光的一段。&lt;/p&gt;
-&lt;p&gt;最终实际路线大致是：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;FRA 法兰克福 -&amp;gt; PVG 上海 -&amp;gt; KIX 大阪关西
-大阪 -&amp;gt; 奈良 -&amp;gt; 京都 -&amp;gt; 宇治 -&amp;gt; 丰乡 -&amp;gt; 沼津 -&amp;gt; 东京
-HND 羽田 -&amp;gt; PEK 北京 -&amp;gt; FRA 法兰克福
-&lt;/code&gt;&lt;/pre&gt;
-&lt;h2&gt;1. 出发和入境：德国经中国到大阪&lt;/h2&gt;
-&lt;p&gt;去程不是德国直飞日本，而是法兰克福到上海，再从上海飞大阪关西机场。上海中转时间大约 20 小时，所以不是普通短转机，而是可以入境中国、取行李、第二天重新托运的长中转。&lt;/p&gt;
-&lt;p&gt;这个路线的关键点是行李。虽然航程连着买，但行李实际只到上海，需要在上海入境后取出，第二天再重新托运到大阪。流程大概是：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;法兰克福值机，拿 FRA -&amp;gt; PVG 和 PVG -&amp;gt; KIX 登机牌。&lt;/li&gt;
-&lt;li&gt;行李托运到上海。&lt;/li&gt;
-&lt;li&gt;上海入境中国，取托运行李。&lt;/li&gt;
-&lt;li&gt;休息或短暂停留。&lt;/li&gt;
-&lt;li&gt;第二天重新值机、重新托运行李。&lt;/li&gt;
-&lt;li&gt;抵达 KIX 后入境日本。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;到达关西机场后，先处理最基础的几件事：入境、取行李、办或启用 ICOCA、取现金。我当时取了 50,000 日元现金。日本大城市刷卡和电子支付已经很普遍，但巡礼点、小店、储物柜、景区和乡下交通，现金仍然能救命。&lt;/p&gt;
-&lt;h2&gt;2. Day 1：大阪入境日&lt;/h2&gt;
-&lt;p&gt;第一天路线很简单：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;KIX 关西机场 -&amp;gt; 大阪市区 -&amp;gt; 心斋桥 / 道顿堀
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;这一天不要排太满。第一次落地日本，真正要完成的是入境、取现、交通卡、到酒店、适应日本交通和街道节奏。晚上去心斋桥、道顿堀刚好：招牌密集、餐饮多、夜景强，很有“终于到日本了”的落地感。&lt;/p&gt;
-&lt;p&gt;大阪更适合作为缓冲站，而不是一上来就暴走。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/001.jpg&quot; alt=&quot;大阪道顿堀夜晚的格力高广告牌&quot; /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;落地后的第一晚，道顿堀和心斋桥把“终于到日本了”的感觉一下子拉满。&lt;/em&gt;&lt;/p&gt;
-&lt;h2&gt;3. Day 2：大阪、奈良、京都&lt;/h2&gt;
-&lt;p&gt;第二天是经典关西移动：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;大阪 -&amp;gt; 奈良 -&amp;gt; 京都
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;上午可以简单看大阪城或大阪市区，中段去奈良公园和东大寺，晚上到京都。奈良适合作为大阪到京都之间的半日过渡，路线顺，节奏也刚好从大阪的商业感切到古都和自然氛围。&lt;/p&gt;
-&lt;p&gt;这一天的重点不是“刷满所有景点”，而是完成城市切换。拖着行李时尤其要提前想好寄存，不要把自己变成移动仓库。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/002.jpg&quot; alt=&quot;大阪城天守阁&quot; /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;上午从大阪城开始，把关西第一段行程的城市感建立起来。&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/003.jpg&quot; alt=&quot;奈良公园里喂鹿&quot; /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;奈良适合夹在大阪和京都之间，节奏会自然慢下来。&lt;/em&gt;&lt;/p&gt;
-&lt;h2&gt;4. Day 3：京都和宇治&lt;/h2&gt;
-&lt;p&gt;第三天是关西段核心：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;伏见稻荷 -&amp;gt; 清水寺 / 二年坂三年坂 / 八坂神社 -&amp;gt; 宇治 -&amp;gt; 京都商店街
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;京都热门点一定要早起。伏见稻荷如果晚去，千本鸟居基本就是人挤人；早上去才能拍到比较干净的画面。清水寺、二年坂三年坂和八坂神社也一样，越晚人越多。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/004.jpg&quot; alt=&quot;伏见稻荷的千本鸟居&quot; /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;早起去伏见稻荷的回报很直接：鸟居之间终于有能呼吸的空隙。&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/005.jpg&quot; alt=&quot;清水寺舞台与京都城市远景&quot; /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;清水寺这一段基本靠走，天气和人流都会直接影响体验。&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;下午去宇治，是《響け！ユーフォニアム》的核心巡礼线。宇治桥、宇治川、平等院、抹茶甜品店、京吹取景地，都很适合慢慢走。宇治和京都市区的气质完全不同：城市更小，河边更安静，作品记忆和现实地点叠在一起的感觉更强。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/006.jpg&quot; alt=&quot;宇治的京阿尼作品展示&quot; /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;宇治不只是观光点，更像是把京阿尼作品记忆放回现实街道里。&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/007.jpg&quot; alt=&quot;宇治抹茶芭菲和抹茶&quot; /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;抹茶甜品不是单纯补给，它会和宇治这个地点本身绑定在一起。&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;晚上回京都后，可以补玉子市场相关商店街。这样 Day 3 实际上变成了“京都传统观光 + 京阿尼作品巡礼 + 宇治京吹核心巡礼”。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/008.jpg&quot; alt=&quot;京都商店街里的玉子市场角色牌&quot; /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;玉子市场相关商店街更像隐藏支线，适合放在京都夜晚收尾。&lt;/em&gt;&lt;/p&gt;
-&lt;h2&gt;5. Day 4：丰乡小学，然后临时改道沼津&lt;/h2&gt;
-&lt;p&gt;第四天原计划很硬：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;京都 -&amp;gt; 丰乡小学校旧校舍群 -&amp;gt; 河口湖
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;丰乡小学是《K-ON!》非常重要的巡礼地。它交通不算方便，对普通游客吸引力没那么强，但对作品粉丝非常值。校舍、楼梯、部室、周边小店，都有一种不是商业景点、而是真正为了作品走到这里的感觉。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/009.jpg&quot; alt=&quot;丰乡小学校旧校舍里的茶会布置&quot; /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;丰乡小学的魅力在于它不像普通景点，更像把作品里的部室空气保留下来了。&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;问题出在后半段：河口湖大雪，交通不稳定。冬天去富士山周边，最大的风险不只是看不到山，而是进不去、出不来，或者后面东京行程被连带打乱。&lt;/p&gt;
-&lt;p&gt;最后我没有硬冲河口湖，而是改去沼津。这个决定非常正确。&lt;/p&gt;
-&lt;p&gt;沼津作为替代方案有几个优势：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;靠近三岛，能接东海道新干线和 JR 干线。&lt;/li&gt;
-&lt;li&gt;仍然有看富士山的机会。&lt;/li&gt;
-&lt;li&gt;是 LoveLive! Sunshine!! 核心圣地。&lt;/li&gt;
-&lt;li&gt;有骏河湾和海鲜。&lt;/li&gt;
-&lt;li&gt;第二天进东京比从河口湖脱困稳定得多。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;晚上在沼津吃了魚がし鮨本店，比纯游客区回转寿司更有地方鱼获特色，也成了这次临时改线后的惊喜。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/010.jpg&quot; alt=&quot;沼津海鲜丼&quot; /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;临时改到沼津之后，骏河湾海鲜成了第一份补偿。&lt;/em&gt;&lt;/p&gt;
-&lt;h2&gt;6. Day 5：沼津 LoveLive! Sunshine!! 巡礼&lt;/h2&gt;
-&lt;p&gt;第五天是整趟旅行最惊喜的一天：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;沼津 -&amp;gt; 三津 / 淡岛方向 -&amp;gt; 骏河湾富士山 -&amp;gt; 东京
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;沼津的巡礼密度很高。市区、三津、淡岛、水族馆、港口、LoveLive 痛船、骏河湾海岸线，都和 LoveLive! Sunshine!! 绑定得很深。&lt;/p&gt;
-&lt;p&gt;这一天最有记忆点的是骏河湾、富士山和痛船同框。原本河口湖看富士山失败，但沼津给了另一种更有个人主题的富士山：不是单纯风景，而是“海 + 富士山 + 动漫巡礼”的组合。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/014.jpg&quot; alt=&quot;骏河湾、富士山与 LoveLive 痛船同框&quot; /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;这张就是河口湖取消后的神展开：富士山、骏河湾、LoveLive 痛船全都赶上了。&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;下午或晚上从沼津去东京也很顺：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;沼津 -&amp;gt; 三岛 -&amp;gt; 东京
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;这就是为什么沼津是高质量替代方案。它不是随便找个地方避险，而是同时保住了富士山、巡礼、海鲜和后续交通。&lt;/p&gt;
-&lt;h2&gt;7. 东京阶段：二次元主战场&lt;/h2&gt;
-&lt;p&gt;东京阶段的核心区域包括：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;秋叶原：周边、手办、CD、BD、二次元店、中古店。&lt;/li&gt;
-&lt;li&gt;下北泽：孤独摇滚和现实乐队文化氛围。&lt;/li&gt;
-&lt;li&gt;池袋：二次元商业区和动漫店。&lt;/li&gt;
-&lt;li&gt;涩谷：现代东京感、夜景、SHIBUYA SKY。&lt;/li&gt;
-&lt;li&gt;新宿：城市密度、交通枢纽和夜景。&lt;/li&gt;
-&lt;li&gt;台场：海湾景观和商业设施。&lt;/li&gt;
-&lt;li&gt;浅草：传统东京观光。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;秋叶原适合第一次朝圣式体验，但不要低估它的时间黑洞属性。下北泽则更适合喜欢乐队番、MyGO!!!!!、Ave Mujica、Girls Band Cry、K-ON! 这类作品的人，它的现实音乐场景和动画舞台感是连在一起的。&lt;/p&gt;
-&lt;p&gt;东京还很适合用长焦拍街景：坡道、铁路、十字路口、城市压缩感，都能拍出很干净的画面。《你的名字。》相关地点和东京坡道巡礼，也很适合放进东京段。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/011.jpg&quot; alt=&quot;东京夜景与东京塔&quot; /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;SHIBUYA SKY 或类似高处视角很适合第一次东京旅行，用来建立城市尺度。&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/012.jpg&quot; alt=&quot;赤羽桥站前的东京塔夜景&quot; /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;东京塔近距离夜景更像城市巡礼的注脚，路牌和塔同框很有现场感。&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/013.jpg&quot; alt=&quot;台场独角兽高达&quot; /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;台场适合作为东京段的海湾支线，独角兽高达是很稳定的二次元地标。&lt;/em&gt;&lt;/p&gt;
-&lt;h2&gt;8. 交通和行李经验&lt;/h2&gt;
-&lt;p&gt;ICOCA 很实用。它能覆盖大阪、京都、奈良、JR 普通线路，到了东京也能继续刷。第一次日本多城市自由行，IC 卡能减少大量买票和换乘时的心理成本。&lt;/p&gt;
-&lt;p&gt;长距离移动要灵活。大阪、京都、名古屋、三岛、东京这些大动脉问题不大，真正影响行程的是冬天山区和富士山周边天气。票不一定是最大问题，天气和交通中断才是。&lt;/p&gt;
-&lt;p&gt;行李不要拖去所有巡礼点。丰乡、宇治、沼津这种地方，轻装体验会好很多。退房后跨城市移动，优先考虑酒店寄存、车站 coin locker 或可靠店铺寄存。&lt;/p&gt;
-&lt;h2&gt;9. 可复用行程模板&lt;/h2&gt;
-&lt;p&gt;如果下次复刻类似路线，可以这样安排：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;Day 1  大阪落地，心斋桥 / 道顿堀
-Day 2  大阪 -&amp;gt; 奈良 -&amp;gt; 京都
-Day 3  京都早起观光 -&amp;gt; 宇治京吹巡礼
-Day 4  京都 -&amp;gt; 丰乡 K-ON! -&amp;gt; 静冈方向
-Day 5  沼津 LoveLive! Sunshine!! -&amp;gt; 东京
-Day 6  秋叶原 / 池袋 / 下北泽
-Day 7  涩谷 / 新宿 / 台场 / 浅草
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;冬天如果安排河口湖，一定提前准备替代方案。沼津、三岛、静冈一线就是很好的备选：交通稳、接东京方便，而且富士山和动漫巡礼都有。&lt;/p&gt;
-&lt;h2&gt;10. 一句话总结&lt;/h2&gt;
-&lt;p&gt;这次旅行最成功的地方，不是完全按原计划执行，而是在河口湖大雪时果断改线，把一次可能失败的富士山行程，变成了沼津、骏河湾、LoveLive 痛船、海鲜寿司和富士山同框的高质量巡礼。&lt;/p&gt;
 </content:encoded></item><item><title>德国留学生申请日本旅游签证：从材料准备到拿到单次签证</title><link>https://yuulog.org/posts/japan-visa-from-germany-student/</link><guid isPermaLink="true">https://yuulog.org/posts/japan-visa-from-germany-student/</guid><description>以中国护照、德国居留卡、德国学生身份为例，复盘一次在德国申请日本旅游签证的材料准备、行程表逻辑、单次与多次签证预期。</description><pubDate>Wed, 13 May 2026 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;德国留学生申请日本旅游签证：从材料准备到拿到单次签证&lt;/h1&gt;
 &lt;p&gt;这篇是一次真实申请经验的复盘，身份组合是：中国护照、德国 Aufenthaltstitel、德国学生身份，从德国出发去日本旅游。它不是国内旅行社代办路线，而是以德国长期居留者身份，在德国的日本使领馆体系里申请短期旅游签证。&lt;/p&gt;
 &lt;p&gt;签证规则会变，材料要求也可能按辖区调整。写材料前一定先看自己 Wohnort 对应的日本使领馆官网。日本驻德国使馆页面也明确提醒：申请应提交给居住地对应的使领馆，短期旅游签证停留期通常为 15、30 或最多 90 天；柏林使馆页面还写到建议不要早于出发前 2.5 个月、最晚出发前 3 周申请，处理时间至少 5 个工作日，材料完整才会受理。&lt;/p&gt;
