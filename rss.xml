@@ -711,7 +711,7 @@ pnpm deploy:backend
 &lt;pre&gt;&lt;code&gt;const DEFAULT_COMMENT_STATUS: CommentStatus = &quot;approved&quot;;
 &lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;因此评论提交后理论上会立刻显示。&lt;br /&gt;
-不过接口返回文案仍是“评论已提交，等待审核”，这是当前实现中的文案和状态不完全一致，后续如果你想改成真正审核流，可以把默认状态改成 &lt;code&gt;pending&lt;/code&gt;。&lt;/p&gt;
+接口返回文案是“评论已发布”，和当前默认状态 &lt;code&gt;approved&lt;/code&gt; 保持一致；后续如果你想改成真正审核流，可以把默认状态改成 &lt;code&gt;pending&lt;/code&gt;。&lt;/p&gt;
 &lt;h3&gt;9.4 验证后台接口&lt;/h3&gt;
 &lt;p&gt;用 &lt;code&gt;ADMIN_TOKEN&lt;/code&gt; 调接口：&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;GET /api/admin/comments?status=approved

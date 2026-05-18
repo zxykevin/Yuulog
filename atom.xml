@@ -5,7 +5,7 @@
   <link href="https://yuulog.org/" rel="alternate" type="text/html"/>
   <link href="https://yuulog.org/atom.xml" rel="self" type="application/atom+xml"/>
   <id>https://yuulog.org/</id>
-  <updated>2026-05-18T20:01:57.612Z</updated>
+  <updated>2026-05-18T22:28:52.948Z</updated>
   <language>zh_CN</language>
   <entry>
     <title>从大阪到东京：关西、中部、关东动漫圣地巡礼路线复盘</title>
@@ -753,7 +753,7 @@ pnpm deploy:backend
 <pre><code>const DEFAULT_COMMENT_STATUS: CommentStatus = "approved";
 </code></pre>
 <p>因此评论提交后理论上会立刻显示。<br />
-不过接口返回文案仍是“评论已提交，等待审核”，这是当前实现中的文案和状态不完全一致，后续如果你想改成真正审核流，可以把默认状态改成 <code>pending</code>。</p>
+接口返回文案是“评论已发布”，和当前默认状态 <code>approved</code> 保持一致；后续如果你想改成真正审核流，可以把默认状态改成 <code>pending</code>。</p>
 <h3>9.4 验证后台接口</h3>
 <p>用 <code>ADMIN_TOKEN</code> 调接口：</p>
 <pre><code>GET /api/admin/comments?status=approved
