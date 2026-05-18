@@ -486,7 +486,7 @@ const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
 					return;
 				}
 
-				feedback.textContent = "评论已提交，等待审核";
+				feedback.textContent = data.message || "评论已发布";
 				const contentField = form.elements.namedItem("content");
 				if (contentField instanceof HTMLTextAreaElement) {
 					contentField.value = "";
