@@ -46,6 +46,11 @@
   - 私有仓库认证
   - 故障排查
 
+- **[DEPLOYMENT_TUTORIAL.md](./DEPLOYMENT_TUTORIAL.md)** - 星轨手札全栈部署教程
+  - `Mizuki` + `yuulog-comments` 的完整部署顺序
+  - 评论前后端联调
+  - `/admin/` 评论审核后台使用方法
+
 - **[AUTO_BUILD_TRIGGER.md](./AUTO_BUILD_TRIGGER.md)** - 自动构建触发快速参考 🆕
   - 5 步快速配置，解决内容更新不触发部署的问题
 
@@ -84,6 +89,7 @@ docs/
 ├── CONTENT_REPOSITORY.md        # 内容仓库结构
 ├── MIGRATION_GUIDE.md           # 迁移指南
 ├── DEPLOYMENT.md                # 部署完整指南
+├── DEPLOYMENT_TUTORIAL.md       # 全栈部署实操教程
 ├── AUTO_BUILD_TRIGGER.md        # 自动构建触发快速参考
 └── image/                       # 文档图片资源
 ```
