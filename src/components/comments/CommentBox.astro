@@ -486,12 +486,18 @@ const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
 					return;
 				}
 
-				feedback.textContent = data.message || "评论已发布";
+				const isApproved = data.status === "approved";
+				feedback.textContent = isApproved
+					? "评论已发布。"
+					: data.message || "评论已提交，等待审核。";
 				const contentField = form.elements.namedItem("content");
 				if (contentField instanceof HTMLTextAreaElement) {
 					contentField.value = "";
 				}
 				setReplyTarget(root, null);
+				if (isApproved) {
+					await loadComments(root);
+				}
 			} catch {
 				feedback.textContent = "提交失败，请检查网络后重试。";
 			} finally {
