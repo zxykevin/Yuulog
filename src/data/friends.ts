@@ -35,6 +35,13 @@ export const friends: Friend[] = [
 		url: "https://tblog.mmzhiku.xyz/",
 		status: "online",
 	},
+	{
+		name: "辰渊尘站",
+		avatar: "https://blog.mcxiaochen.top/favicon.png",
+		description: "有志不在年高，无志空活百岁。",
+		url: "https://blog.mcxiaochen.top/",
+		status: "online",
+	},
 ];
 
 export interface FriendItem {
