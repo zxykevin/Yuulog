@@ -19,6 +19,8 @@ export const WIDGET_COMPONENT_MAP = {
 	"music-player": "../components/widgets/music-player/MusicPlayer.svelte",
 	pio: "../components/widget/Pio.astro",
 	"site-stats": "../components/widgets/site-stats/SiteStats.astro",
+	"visitor-stats":
+		"../components/features/visitor-stats/VisitorStatsCard.astro",
 	calendar: "../components/widgets/calendar/Calendar.astro",
 	custom: null,
 } as const;

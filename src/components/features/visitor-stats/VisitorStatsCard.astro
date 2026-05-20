@@ -1,0 +1,189 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+	class?: string;
+	style?: string;
+}
+
+const { class: className = "", style } = Astro.props;
+
+const isHomePage = Astro.url.pathname === "/" || Astro.url.pathname === "";
+
+const statsProxyUrl = "https://yuulog-umami.2596864417.workers.dev/";
+
+const stats = [
+	{
+		key: "online",
+		label: "当前在线",
+		icon: "material-symbols:person-check-outline-rounded",
+	},
+	{
+		key: "todayVisitors",
+		label: "今日访客",
+		icon: "material-symbols:group-outline-rounded",
+	},
+	{
+		key: "todayViews",
+		label: "今日浏览",
+		icon: "material-symbols:visibility-outline-rounded",
+	},
+	{
+		key: "yesterdayViews",
+		label: "昨日浏览",
+		icon: "material-symbols:history-rounded",
+	},
+	{
+		key: "monthViews",
+		label: "本月浏览",
+		icon: "material-symbols:calendar-month-outline-rounded",
+	},
+	{
+		key: "totalViews",
+		label: "总浏览",
+		icon: "material-symbols:bar-chart-rounded",
+	},
+];
+---
+
+{
+	isHomePage && (
+		<section
+			class:list={["card-base p-4", className]}
+			style={style}
+			aria-label="访客信息"
+			data-visitor-stats-card
+		>
+			<div class="mb-4 flex items-center justify-between gap-3">
+				<div
+					class="font-bold text-lg text-neutral-900 dark:text-neutral-100 relative ml-4 transition
+			before:w-1 before:h-4 before:rounded-md before:bg-[var(--primary)]
+			before:absolute before:left-[-16px] before:top-[5.5px]"
+				>
+					访客信息
+				</div>
+				<div
+					class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400"
+					data-visitor-stats-status
+				>
+					<Icon
+						name="material-symbols:sync-rounded"
+						class="text-base text-[var(--primary)]"
+					/>
+					<span>加载中</span>
+				</div>
+			</div>
+
+			<div class="grid grid-cols-2 gap-2.5">
+				{stats.map((stat) => (
+					<div class="rounded-lg bg-black/[0.03] dark:bg-white/[0.04] px-3 py-3 transition">
+						<div class="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400 mb-2">
+							<Icon
+								name={stat.icon}
+								class="text-base text-[var(--primary)] shrink-0"
+							/>
+							<span class="truncate">{stat.label}</span>
+						</div>
+						<div
+							class="text-xl font-bold leading-none text-neutral-900 dark:text-neutral-100 tabular-nums"
+							data-visitor-stat={stat.key}
+						>
+							--
+						</div>
+					</div>
+				))}
+			</div>
+		</section>
+	)
+}
+
+<script is:inline define:vars={{ statsProxyUrl }}>
+	(() => {
+		function formatStatNumber(value) {
+			const numericValue = Number(value);
+			if (!Number.isFinite(numericValue)) {
+				return "--";
+			}
+			return new Intl.NumberFormat().format(numericValue);
+		}
+
+		function normalizeStats(data) {
+			return {
+				online: data?.online,
+				todayVisitors: data?.todayVisitors,
+				todayViews: data?.todayViews,
+				yesterdayViews: data?.yesterdayViews,
+				monthViews: data?.monthViews,
+				totalViews: data?.totalViews ?? data?.views,
+			};
+		}
+
+		function setStatus(card, text, isError = false) {
+			const status = card.querySelector("[data-visitor-stats-status]");
+			if (!status) {
+				return;
+			}
+			status.classList.toggle("text-red-500", isError);
+			const label = status.querySelector("span");
+			if (label) {
+				label.textContent = text;
+			}
+		}
+
+		async function refreshVisitorStats() {
+			const cards = Array.from(
+				document.querySelectorAll("[data-visitor-stats-card]"),
+			);
+			if (cards.length === 0) {
+				return;
+			}
+
+			try {
+				const response = await fetch(statsProxyUrl, {
+					headers: { Accept: "application/json" },
+				});
+				if (!response.ok) {
+					throw new Error(
+						`Visitor stats request failed: ${response.status}`,
+					);
+				}
+
+				const data = await response.json();
+				if (data?.ok === false) {
+					throw new Error("Visitor stats response is unavailable");
+				}
+
+				const normalizedStats = normalizeStats(data);
+				cards.forEach((card) => {
+					card.querySelectorAll("[data-visitor-stat]").forEach(
+						(element) => {
+							const key = element.dataset.visitorStat;
+							element.textContent = formatStatNumber(
+								normalizedStats[key],
+							);
+						},
+					);
+					setStatus(card, "已更新");
+				});
+			} catch (error) {
+				console.warn(error);
+				cards.forEach((card) => setStatus(card, "暂不可用", true));
+			}
+		}
+
+		window.refreshVisitorStats = refreshVisitorStats;
+
+		if (!window.__visitorStatsListenersAttached) {
+			window.__visitorStatsListenersAttached = true;
+			if (document.readyState === "loading") {
+				document.addEventListener(
+					"DOMContentLoaded",
+					refreshVisitorStats,
+				);
+			}
+			document.addEventListener("swup:page:view", refreshVisitorStats);
+		}
+
+		refreshVisitorStats();
+	})();
+</script>

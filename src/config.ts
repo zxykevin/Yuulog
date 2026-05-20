@@ -460,11 +460,21 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			animationDelay: 50,
 		},
 		{
+			// 组件类型：访客信息组件
+			type: "visitor-stats",
+			// 组件位置："top" 表示固定在顶部
+			position: "top",
+			// CSS 类名
+			class: "onload-animation",
+			// 动画延迟时间
+			animationDelay: 100,
+		},
+		{
 			// 组件类型：侧栏音乐组件
 			type: "music-sidebar",
 			position: "sticky",
 			class: "onload-animation",
-			animationDelay: 100,
+			animationDelay: 150,
 		},
 		{
 			// 组件类型：分类组件
@@ -474,7 +484,7 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			// CSS 类名
 			class: "onload-animation",
 			// 动画延迟时间
-			animationDelay: 150,
+			animationDelay: 200,
 			// 响应式配置
 			responsive: {
 				// 折叠阈值：当分类数量超过5个时自动折叠
@@ -540,11 +550,12 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 
 	// 侧栏组件布局配置
 	components: {
-		left: ["profile", "announcement", "tags", "card-toc"],
+		left: ["profile", "announcement", "visitor-stats", "tags", "card-toc"],
 		right: ["site-stats", "calendar", "categories", "music-sidebar"],
 		drawer: [
 			"profile",
 			"announcement",
+			"visitor-stats",
 			"music-sidebar",
 			"categories",
 			"tags",
