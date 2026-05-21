@@ -68,6 +68,18 @@
 		musicPlayerStore.toggleMute();
 	}
 
+	function isTypingTarget(target: EventTarget | null) {
+		if (!(target instanceof HTMLElement)) {
+			return false;
+		}
+		return (
+			target.isContentEditable ||
+			target instanceof HTMLInputElement ||
+			target instanceof HTMLTextAreaElement ||
+			target instanceof HTMLSelectElement
+		);
+	}
+
 	function handleVolumeButtonClick() {
 		musicPlayerStore.toggleMute();
 	}
@@ -132,6 +144,10 @@
 	}
 
 	function handleVolumeKeyDown(event: KeyboardEvent) {
+		if (isTypingTarget(event.target)) {
+			return;
+		}
+
 		if (event.key === "ArrowLeft" || event.key === "ArrowDown") {
 			event.preventDefault();
 			musicPlayerStore.setVolume(state.volume - 0.05);
