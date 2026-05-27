@@ -600,6 +600,7 @@
 						const replyText = comment.parentId ? `回复 @${parent ? parent.nickname : "未知用户"}` : "顶级评论";
 						const contact = comment.email || comment.emailHash || "未提供";
 						const website = comment.website || "未提供";
+						const likeCount = Number.isFinite(Number(comment.likeCount)) ? Number(comment.likeCount) : 0;
 						const busy = state.busyId === comment.id;
 						const actions = MUTABLE_STATUSES.map((status) => {
 							const labels = {
@@ -626,6 +627,7 @@
 									<div><span>网站</span><strong>${escapeHtml(website)}</strong></div>
 									<div><span>页面路径</span><strong>${escapeHtml(comment.pagePath)}</strong></div>
 									<div><span>创建时间</span><strong>${escapeHtml(formatDate(comment.createdAt))}</strong></div>
+									<div><span>点赞</span><strong>${escapeHtml(likeCount)}</strong></div>
 									<div><span>parentId</span><strong>${escapeHtml(comment.parentId || "无")}</strong></div>
 									<div><span>当前状态</span><strong>${escapeHtml(comment.status)}</strong></div>
 								</div>
