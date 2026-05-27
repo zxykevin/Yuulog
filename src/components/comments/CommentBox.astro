@@ -77,6 +77,8 @@ const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
 		website: string | null;
 		content: string;
 		createdAt: string;
+		likeCount?: number;
+		liked?: boolean;
 	};
 
 	type CommentsResponse = {
@@ -232,6 +234,22 @@ const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
 		container.append(stateCard);
 	}
 
+	function normalizeCommentLikeState(comment: Comment) {
+		const likeCount = Number(comment.likeCount);
+		comment.likeCount =
+			Number.isFinite(likeCount) && likeCount > 0 ? likeCount : 0;
+		comment.liked = comment.liked === true;
+	}
+
+	function updateLikeButton(button: HTMLButtonElement, comment: Comment) {
+		normalizeCommentLikeState(comment);
+		button.classList.toggle("is-liked", comment.liked === true);
+		button.setAttribute("aria-pressed", comment.liked ? "true" : "false");
+		button.textContent = comment.liked
+			? `♥ 已赞 ${comment.likeCount}`
+			: `♥ 赞 ${comment.likeCount}`;
+	}
+
 	function renderComments(root: CommentBoxElement, comments: Comment[]) {
 		const { list, count } = getElements(root);
 		if (!list) return;
@@ -335,6 +353,13 @@ const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
 
 		const actions = document.createElement("div");
 		actions.className = "comment-actions";
+		const likeButton = document.createElement("button");
+		likeButton.type = "button";
+		likeButton.className = "comment-like-button";
+		updateLikeButton(likeButton, comment);
+		likeButton.addEventListener("click", () => {
+			void toggleCommentLike(root, comment, likeButton);
+		});
 		const replyButton = document.createElement("button");
 		replyButton.type = "button";
 		replyButton.className = "comment-reply-button";
@@ -345,13 +370,49 @@ const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
 				nickname: comment.nickname,
 			});
 		});
-		actions.append(replyButton);
+		actions.append(likeButton, replyButton);
 
 		const replies = document.createElement("div");
 		replies.className = "comment-replies";
 
 		article.append(meta, content, actions, replies);
 		return article;
+	}
+
+	async function toggleCommentLike(
+		root: CommentBoxElement,
+		comment: Comment,
+		button: HTMLButtonElement,
+	) {
+		const liked = comment.liked === true;
+		button.disabled = true;
+
+		try {
+			const response = await fetch(
+				`${root.dataset.apiBaseUrl ?? ""}/api/comments/${encodeURIComponent(comment.id)}/like`,
+				{
+					method: liked ? "DELETE" : "POST",
+					headers: { Accept: "application/json" },
+				},
+			);
+			const data = (await response.json()) as {
+				ok?: boolean;
+				likeCount?: number;
+				liked?: boolean;
+				message?: string;
+			};
+			if (!response.ok || !data.ok) {
+				throw new Error(data.message || "Failed to update like");
+			}
+
+			comment.likeCount = Number(data.likeCount) || 0;
+			comment.liked = data.liked === true;
+			updateLikeButton(button, comment);
+		} catch (error) {
+			console.warn("评论点赞操作失败", error);
+		} finally {
+			button.disabled = false;
+		}
 	}
 
 	async function loadComments(root: CommentBoxElement) {
@@ -621,7 +682,13 @@ const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
 		line-height: 1.75;
 		color: rgba(0, 0, 0, 0.78);
 	}
-	:global(.comment-reply-button) {
+	:global(.comment-actions) {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+	:global(.comment-reply-button),
+	:global(.comment-like-button) {
 		border: 1px solid color-mix(in oklab, var(--primary) 38%, transparent);
 		border-radius: 999px;
 		background: color-mix(in oklab, var(--primary) 12%, white);
@@ -635,10 +702,18 @@ const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
 			color 0.18s ease,
 			transform 0.18s ease;
 	}
-	:global(.comment-reply-button:hover) {
+	:global(.comment-reply-button:hover),
+	:global(.comment-like-button:hover),
+	:global(.comment-like-button.is-liked) {
 		border-color: color-mix(in oklab, var(--primary) 58%, transparent);
 		background: color-mix(in oklab, var(--primary) 20%, white);
+		color: color-mix(in oklab, var(--primary) 82%, black);
 		transform: translateY(-1px);
+	}
+	:global(.comment-like-button:disabled) {
+		cursor: not-allowed;
+		opacity: 0.68;
+		transform: none;
 	}
 	:global(.comment-replies) {
 		display: grid;
@@ -769,12 +844,15 @@ const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
 	:global(:root.dark .comment-state-text) {
 		color: rgba(255, 255, 255, 0.82);
 	}
-	:global(:root.dark .comment-reply-button) {
+	:global(:root.dark .comment-reply-button),
+	:global(:root.dark .comment-like-button) {
 		border-color: color-mix(in oklab, var(--primary) 52%, transparent);
 		background: color-mix(in oklab, var(--primary) 22%, transparent);
 		color: color-mix(in oklab, var(--primary) 28%, white);
 	}
-	:global(:root.dark .comment-reply-button:hover) {
+	:global(:root.dark .comment-reply-button:hover),
+	:global(:root.dark .comment-like-button:hover),
+	:global(:root.dark .comment-like-button.is-liked) {
 		border-color: color-mix(in oklab, var(--primary) 72%, transparent);
 		background: color-mix(in oklab, var(--primary) 34%, transparent);
 	}
