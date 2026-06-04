@@ -1,6 +1,6 @@
 ---
 title: "YuuComments v0.1.4：给静态博客一个 Cloudflare-native 的评论系统"
-date: 2026-06-04
+published: 2026-06-04
 tags:
   - YuuComments
   - Cloudflare Workers
