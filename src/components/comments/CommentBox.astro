@@ -69,6 +69,22 @@ const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
 </section>
 
 <script>
+	const COMMENT_RENDER_ASSETS = {
+		marked: "https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js",
+		dompurify:
+			"https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js",
+	};
+	const COMMENT_LINK_REL = "nofollow noopener noreferrer";
+	const REPORT_REASONS = [
+		["spam", "垃圾广告"],
+		["abuse", "辱骂攻击"],
+		["harassment", "骚扰"],
+		["privacy", "隐私泄露"],
+		["illegal", "违法内容"],
+		["other", "其他"],
+	] as const;
+	const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 	type Comment = {
 		id: string;
 		pagePath: string;
@@ -124,6 +140,19 @@ const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
 		typeof globalThis & {
 			turnstile?: TurnstileApi;
 			__mizukiTurnstileLoader?: Promise<TurnstileApi>;
+			__mizukiCommentScriptLoaders?: Partial<Record<string, Promise<void>>>;
+			marked?: {
+				parse: (
+					content: string,
+					options?: Record<string, unknown>,
+				) => string;
+			};
+			DOMPurify?: {
+				sanitize: (
+					content: string,
+					options?: Record<string, unknown>,
+				) => string;
+			};
 		};
 
 	function isHttpWebsite(value: string) {
@@ -138,6 +167,10 @@ const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
 
 	function getSafeWebsite(value: string | null) {
 		return value && isHttpWebsite(value) ? value : null;
+	}
+
+	function isValidEmail(value: string) {
+		return EMAIL_PATTERN.test(value);
 	}
 
 	function formatLocalTime(value: string) {
@@ -219,6 +252,142 @@ const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
 		);
 
 		return turnstileWindow.__mizukiTurnstileLoader;
+	}
+
+	function loadScriptOnce(
+		id: string,
+		src: string,
+		isReady: (win: TurnstileWindow) => boolean,
+	) {
+		const browserWindow = window as TurnstileWindow;
+		if (isReady(browserWindow)) return Promise.resolve();
+		if (!browserWindow.__mizukiCommentScriptLoaders) {
+			browserWindow.__mizukiCommentScriptLoaders = {};
+		}
+		if (browserWindow.__mizukiCommentScriptLoaders[id]) {
+			return browserWindow.__mizukiCommentScriptLoaders[id];
+		}
+
+		browserWindow.__mizukiCommentScriptLoaders[id] = new Promise(
+			(resolve, reject) => {
+				const existingScript =
+					document.querySelector<HTMLScriptElement>(
+						`script[data-comment-lib="${id}"]`,
+					);
+				const script =
+					existingScript ?? document.createElement("script");
+
+				script.addEventListener(
+					"load",
+					() =>
+						isReady(browserWindow)
+							? resolve()
+							: reject(new Error(`${id} unavailable`)),
+					{ once: true },
+				);
+				script.addEventListener(
+					"error",
+					() => reject(new Error(`${id} failed to load`)),
+					{ once: true },
+				);
+
+				if (!existingScript) {
+					script.src = src;
+					script.async = true;
+					script.defer = true;
+					script.dataset.commentLib = id;
+					document.head.append(script);
+				}
+			},
+		);
+
+		return browserWindow.__mizukiCommentScriptLoaders[id];
+	}
+
+	async function prepareCommentRendering() {
+		const browserWindow = window as TurnstileWindow;
+		try {
+			await Promise.all([
+				loadScriptOnce(
+					"marked",
+					COMMENT_RENDER_ASSETS.marked,
+					(win) => Boolean(win.marked),
+				),
+				loadScriptOnce(
+					"dompurify",
+					COMMENT_RENDER_ASSETS.dompurify,
+					(win) => Boolean(win.DOMPurify),
+				),
+			]);
+		} catch (error) {
+			console.warn("评论 Markdown 渲染依赖加载失败", error);
+		}
+		return Boolean(browserWindow.marked && browserWindow.DOMPurify);
+	}
+
+	function escapeHtml(value: string) {
+		return value.replaceAll("&", "&amp;").replaceAll("<", "&lt;");
+	}
+
+	function sanitizeCommentHtml(html: string) {
+		const browserWindow = window as TurnstileWindow;
+		return browserWindow.DOMPurify?.sanitize(html, {
+			ALLOWED_URI_REGEXP:
+				/^(?:(?:https?|mailto):|[^a-z]|[a-z+.-]+(?:[^a-z+.-:]|$))/i,
+			FORBID_TAGS: [
+				"style",
+				"script",
+				"iframe",
+				"object",
+				"embed",
+				"form",
+				"input",
+			],
+			FORBID_ATTR: ["style", "onerror", "onload", "onclick"],
+		}) ?? "";
+	}
+
+	function hardenCommentLinks(container: HTMLElement) {
+		for (const link of container.querySelectorAll<HTMLAnchorElement>("a[href]")) {
+			let url: URL;
+			try {
+				url = new URL(link.getAttribute("href") ?? "", window.location.href);
+			} catch {
+				link.removeAttribute("href");
+				continue;
+			}
+			if (!["http:", "https:", "mailto:"].includes(url.protocol)) {
+				link.removeAttribute("href");
+				continue;
+			}
+			link.target = "_blank";
+			link.rel = COMMENT_LINK_REL;
+		}
+	}
+
+	function renderCommentContent(container: HTMLElement, content: string) {
+		const browserWindow = window as TurnstileWindow;
+		container.className = "comment-content";
+
+		if (!browserWindow.marked || !browserWindow.DOMPurify) {
+			container.textContent = content;
+			return;
+		}
+
+		container.classList.add("comment-markdown");
+		try {
+			const html = browserWindow.marked.parse(escapeHtml(content), {
+				gfm: true,
+				breaks: true,
+				headerIds: false,
+				mangle: false,
+			});
+			container.innerHTML = sanitizeCommentHtml(html);
+			hardenCommentLinks(container);
+		} catch (error) {
+			console.warn("评论 Markdown 渲染失败", error);
+			container.textContent = content;
+		}
 	}
 
 	function renderState(container: HTMLElement, message: string) {
@@ -347,9 +516,8 @@ const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
 		time.textContent = formatLocalTime(comment.createdAt);
 		meta.append(author, time);
 
-		const content = document.createElement("p");
-		content.className = "comment-content";
-		content.textContent = comment.content;
+		const content = document.createElement("div");
+		renderCommentContent(content, comment.content);
 
 		const actions = document.createElement("div");
 		actions.className = "comment-actions";
@@ -370,13 +538,194 @@ const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
 				nickname: comment.nickname,
 			});
 		});
-		actions.append(likeButton, replyButton);
+		const reportButton = document.createElement("button");
+		reportButton.type = "button";
+		reportButton.className = "comment-report-button";
+		reportButton.textContent = "举报";
+		reportButton.setAttribute("aria-expanded", "false");
+		const reportContainer = document.createElement("div");
+		reportContainer.className = "comment-report-container";
+		reportButton.addEventListener("click", () => {
+			toggleReportForm(root, comment, reportContainer, reportButton);
+		});
+		actions.append(likeButton, replyButton, reportButton);
 
 		const replies = document.createElement("div");
 		replies.className = "comment-replies";
 
-		article.append(meta, content, actions, replies);
+		article.append(meta, content, actions, reportContainer, replies);
 		return article;
+	}
+
+	function toggleReportForm(
+		root: CommentBoxElement,
+		comment: Comment,
+		container: HTMLElement,
+		button: HTMLButtonElement,
+	) {
+		if (container.firstChild) {
+			container.replaceChildren();
+			button.setAttribute("aria-expanded", "false");
+			return;
+		}
+
+		container.append(
+			createReportForm(root, comment, () => {
+				container.replaceChildren();
+				button.setAttribute("aria-expanded", "false");
+			}),
+		);
+		button.setAttribute("aria-expanded", "true");
+	}
+
+	function createReportForm(
+		root: CommentBoxElement,
+		comment: Comment,
+		onCancel: () => void,
+	) {
+		const form = document.createElement("form");
+		form.className = "comment-report-form";
+		form.noValidate = true;
+
+		const emailLabel = document.createElement("label");
+		const emailText = document.createElement("span");
+		emailText.textContent = "你的邮箱";
+		const emailInput = document.createElement("input");
+		emailInput.name = "email";
+		emailInput.type = "email";
+		emailInput.required = true;
+		emailInput.maxLength = 254;
+		emailInput.placeholder = "you@example.com";
+		emailLabel.append(emailText, emailInput);
+
+		const privacyNote = document.createElement("p");
+		privacyNote.className = "comment-report-note";
+		privacyNote.textContent =
+			"你的邮箱会显示给站点管理员，用于处理举报。";
+
+		const reasonLabel = document.createElement("label");
+		const reasonText = document.createElement("span");
+		reasonText.textContent = "举报原因";
+		const reasonSelect = document.createElement("select");
+		reasonSelect.name = "reason";
+		reasonSelect.required = true;
+		for (const [value, label] of REPORT_REASONS) {
+			const option = document.createElement("option");
+			option.value = value;
+			option.textContent = label;
+			reasonSelect.append(option);
+		}
+		reasonLabel.append(reasonText, reasonSelect);
+
+		const messageLabel = document.createElement("label");
+		const messageText = document.createElement("span");
+		messageText.textContent = "补充说明，可选";
+		const messageInput = document.createElement("textarea");
+		messageInput.name = "message";
+		messageInput.rows = 3;
+		messageInput.maxLength = 500;
+		messageInput.placeholder = "补充说明，可选";
+		messageLabel.append(messageText, messageInput);
+
+		const feedback = document.createElement("p");
+		feedback.className = "comment-report-feedback";
+		feedback.setAttribute("aria-live", "polite");
+
+		const actions = document.createElement("div");
+		actions.className = "comment-report-actions";
+		const submitButton = document.createElement("button");
+		submitButton.type = "submit";
+		submitButton.textContent = "提交举报";
+		const cancelButton = document.createElement("button");
+		cancelButton.type = "button";
+		cancelButton.textContent = "取消";
+		cancelButton.addEventListener("click", onCancel);
+		actions.append(submitButton, cancelButton);
+
+		form.append(
+			emailLabel,
+			privacyNote,
+			reasonLabel,
+			messageLabel,
+			feedback,
+			actions,
+		);
+		form.addEventListener("submit", (event) => {
+			event.preventDefault();
+			void submitCommentReport(root, comment, {
+				emailInput,
+				reasonSelect,
+				messageInput,
+				feedback,
+				submitButton,
+			});
+		});
+
+		return form;
+	}
+
+	async function submitCommentReport(
+		root: CommentBoxElement,
+		comment: Comment,
+		elements: {
+			emailInput: HTMLInputElement;
+			reasonSelect: HTMLSelectElement;
+			messageInput: HTMLTextAreaElement;
+			feedback: HTMLElement;
+			submitButton: HTMLButtonElement;
+		},
+	) {
+		const email = elements.emailInput.value.trim();
+		const reason = elements.reasonSelect.value;
+		const message = elements.messageInput.value.trim();
+
+		elements.feedback.textContent = "";
+		if (!isValidEmail(email)) {
+			elements.feedback.textContent = "请输入有效的邮箱地址。";
+			return;
+		}
+
+		elements.submitButton.disabled = true;
+		try {
+			const response = await fetch(
+				`${root.dataset.apiBaseUrl ?? ""}/api/comments/${encodeURIComponent(comment.id)}/report`,
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						Accept: "application/json",
+					},
+					body: JSON.stringify({
+						email,
+						reason,
+						message: message || null,
+					}),
+				},
+			);
+			const data = (await response.json()) as {
+				ok?: boolean;
+				alreadyReported?: boolean;
+				movedToPending?: boolean;
+				message?: string;
+			};
+			if (!response.ok || !data.ok) {
+				throw new Error(data.message || "举报提交失败。");
+			}
+
+			if (data.alreadyReported === true) {
+				elements.feedback.textContent = "你已经举报过这条评论。";
+				return;
+			}
+
+			elements.feedback.textContent =
+				data.movedToPending === true
+					? "举报已提交。这条评论已因多次举报被转回待审核状态。"
+					: "举报已提交。";
+		} catch {
+			elements.feedback.textContent = "举报提交失败。";
+		} finally {
+			elements.submitButton.disabled = false;
+		}
 	}
 
 	async function toggleCommentLike(
@@ -432,6 +781,7 @@ const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
 			if (!response.ok || !data.ok || !Array.isArray(data.comments)) {
 				throw new Error("Failed to load comments");
 			}
+			await prepareCommentRendering();
 			renderComments(root, data.comments);
 		} catch {
 			renderState(list, "评论加载失败，请稍后再试。");
@@ -682,13 +1032,93 @@ const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
 		line-height: 1.75;
 		color: rgba(0, 0, 0, 0.78);
 	}
+	:global(.comment-markdown) {
+		white-space: normal;
+		min-width: 0;
+	}
+	:global(.comment-markdown > :first-child) {
+		margin-top: 0;
+	}
+	:global(.comment-markdown > :last-child) {
+		margin-bottom: 0;
+	}
+	:global(.comment-markdown p),
+	:global(.comment-markdown ul),
+	:global(.comment-markdown ol),
+	:global(.comment-markdown blockquote),
+	:global(.comment-markdown pre),
+	:global(.comment-markdown table) {
+		margin: 0 0 0.75rem;
+	}
+	:global(.comment-markdown ul),
+	:global(.comment-markdown ol) {
+		padding-left: 1.4rem;
+	}
+	:global(.comment-markdown li + li) {
+		margin-top: 0.25rem;
+	}
+	:global(.comment-markdown blockquote) {
+		border-left: 3px solid color-mix(in oklab, var(--primary) 18%, transparent);
+		padding-left: 0.8rem;
+		color: rgba(0, 0, 0, 0.56);
+	}
+	:global(.comment-markdown a) {
+		color: var(--primary);
+		overflow-wrap: anywhere;
+		word-break: break-word;
+	}
+	:global(.comment-markdown code),
+	:global(.comment-markdown pre) {
+		border: 1px solid color-mix(in oklab, var(--primary) 16%, transparent);
+		background: rgba(255, 255, 255, 0.5);
+	}
+	:global(.comment-markdown code) {
+		border-radius: 0.35rem;
+		padding: 0.12rem 0.28rem;
+		font-family:
+			ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo,
+			monospace;
+		font-size: 0.92em;
+	}
+	:global(.comment-markdown pre) {
+		max-width: 100%;
+		overflow-x: auto;
+		border-radius: 0.65rem;
+		padding: 0.85rem;
+		white-space: pre;
+	}
+	:global(.comment-markdown pre code) {
+		display: block;
+		border: 0;
+		background: transparent;
+		padding: 0;
+		white-space: pre;
+		overflow-wrap: normal;
+	}
+	:global(.comment-markdown table) {
+		display: block;
+		max-width: 100%;
+		overflow-x: auto;
+		border-collapse: collapse;
+	}
+	:global(.comment-markdown th),
+	:global(.comment-markdown td) {
+		border: 1px solid color-mix(in oklab, var(--primary) 16%, transparent);
+		padding: 0.45rem 0.6rem;
+		vertical-align: top;
+	}
+	:global(.comment-markdown th) {
+		background: color-mix(in oklab, var(--primary) 8%, white);
+		font-weight: 700;
+	}
 	:global(.comment-actions) {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 0.5rem;
 	}
 	:global(.comment-reply-button),
-	:global(.comment-like-button) {
+	:global(.comment-like-button),
+	:global(.comment-report-button) {
 		border: 1px solid color-mix(in oklab, var(--primary) 38%, transparent);
 		border-radius: 999px;
 		background: color-mix(in oklab, var(--primary) 12%, white);
@@ -704,6 +1134,7 @@ const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
 	}
 	:global(.comment-reply-button:hover),
 	:global(.comment-like-button:hover),
+	:global(.comment-report-button:hover),
 	:global(.comment-like-button.is-liked) {
 		border-color: color-mix(in oklab, var(--primary) 58%, transparent);
 		background: color-mix(in oklab, var(--primary) 20%, white);
@@ -714,6 +1145,68 @@ const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
 		cursor: not-allowed;
 		opacity: 0.68;
 		transform: none;
+	}
+	:global(.comment-report-container:empty) {
+		display: none;
+	}
+	:global(.comment-report-form) {
+		display: grid;
+		gap: 0.75rem;
+		border: 1px solid color-mix(in oklab, var(--primary) 18%, transparent);
+		border-radius: 0.75rem;
+		background: color-mix(in oklab, var(--primary) 6%, white);
+		padding: 0.85rem;
+	}
+	:global(.comment-report-form label) {
+		display: grid;
+		gap: 0.35rem;
+		color: rgba(0, 0, 0, 0.72);
+		font-size: 0.875rem;
+	}
+	:global(.comment-report-form input),
+	:global(.comment-report-form select),
+	:global(.comment-report-form textarea) {
+		width: 100%;
+		border: 1px solid rgba(0, 0, 0, 0.1);
+		border-radius: 0.65rem;
+		background: rgba(255, 255, 255, 0.72);
+		padding: 0.65rem 0.75rem;
+		color: rgba(0, 0, 0, 0.84);
+		outline: none;
+	}
+	:global(.comment-report-form textarea) {
+		min-height: 5rem;
+		resize: vertical;
+	}
+	:global(.comment-report-note),
+	:global(.comment-report-feedback) {
+		margin: 0;
+		color: rgba(0, 0, 0, 0.52);
+		font-size: 0.875rem;
+		line-height: 1.6;
+	}
+	:global(.comment-report-actions) {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+	:global(.comment-report-actions button) {
+		border: 1px solid color-mix(in oklab, var(--primary) 30%, transparent);
+		border-radius: 0.65rem;
+		background: color-mix(in oklab, var(--primary) 10%, white);
+		padding: 0.55rem 0.75rem;
+		color: color-mix(in oklab, var(--primary) 72%, black);
+		font-size: 0.875rem;
+		font-weight: 700;
+	}
+	:global(.comment-report-actions button[type="submit"]) {
+		border-color: var(--primary);
+		background: var(--primary);
+		color: white;
+	}
+	:global(.comment-report-actions button:disabled) {
+		cursor: not-allowed;
+		opacity: 0.68;
 	}
 	:global(.comment-replies) {
 		display: grid;
@@ -841,20 +1334,66 @@ const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
 	:global(:root.dark .comment-content) {
 		color: rgba(255, 255, 255, 0.82);
 	}
+	:global(:root.dark .comment-markdown blockquote) {
+		border-left-color: rgba(255, 255, 255, 0.16);
+		color: rgba(255, 255, 255, 0.58);
+	}
+	:global(:root.dark .comment-markdown code),
+	:global(:root.dark .comment-markdown pre) {
+		border-color: rgba(255, 255, 255, 0.1);
+		background: rgba(255, 255, 255, 0.06);
+	}
+	:global(:root.dark .comment-markdown th),
+	:global(:root.dark .comment-markdown td) {
+		border-color: rgba(255, 255, 255, 0.1);
+	}
+	:global(:root.dark .comment-markdown th) {
+		background: rgba(255, 255, 255, 0.06);
+	}
 	:global(:root.dark .comment-state-text) {
 		color: rgba(255, 255, 255, 0.82);
 	}
 	:global(:root.dark .comment-reply-button),
-	:global(:root.dark .comment-like-button) {
+	:global(:root.dark .comment-like-button),
+	:global(:root.dark .comment-report-button) {
 		border-color: color-mix(in oklab, var(--primary) 52%, transparent);
 		background: color-mix(in oklab, var(--primary) 22%, transparent);
 		color: color-mix(in oklab, var(--primary) 28%, white);
 	}
 	:global(:root.dark .comment-reply-button:hover),
 	:global(:root.dark .comment-like-button:hover),
+	:global(:root.dark .comment-report-button:hover),
 	:global(:root.dark .comment-like-button.is-liked) {
 		border-color: color-mix(in oklab, var(--primary) 72%, transparent);
 		background: color-mix(in oklab, var(--primary) 34%, transparent);
+	}
+	:global(:root.dark .comment-report-form) {
+		border-color: rgba(255, 255, 255, 0.08);
+		background: rgba(255, 255, 255, 0.04);
+	}
+	:global(:root.dark .comment-report-form label) {
+		color: rgba(255, 255, 255, 0.82);
+	}
+	:global(:root.dark .comment-report-form input),
+	:global(:root.dark .comment-report-form select),
+	:global(:root.dark .comment-report-form textarea) {
+		border-color: rgba(255, 255, 255, 0.12);
+		background: rgba(255, 255, 255, 0.06);
+		color: rgba(255, 255, 255, 0.88);
+	}
+	:global(:root.dark .comment-report-note),
+	:global(:root.dark .comment-report-feedback) {
+		color: rgba(255, 255, 255, 0.58);
+	}
+	:global(:root.dark .comment-report-actions button) {
+		border-color: color-mix(in oklab, var(--primary) 52%, transparent);
+		background: color-mix(in oklab, var(--primary) 22%, transparent);
+		color: color-mix(in oklab, var(--primary) 28%, white);
+	}
+	:global(:root.dark .comment-report-actions button[type="submit"]) {
+		border-color: var(--primary);
+		background: var(--primary);
+		color: white;
 	}
 	:global(:root.dark) .comment-form-heading button {
 		color: rgba(255, 255, 255, 0.58);
