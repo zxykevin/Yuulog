@@ -84,6 +84,7 @@ const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
 		["other", "其他"],
 	] as const;
 	const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+	let deviceFingerprintPromise: Promise<string | null> | undefined;
 
 	type Comment = {
 		id: string;
@@ -171,6 +172,31 @@ const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
 
 	function isValidEmail(value: string) {
 		return EMAIL_PATTERN.test(value);
+	}
+
+	async function getDeviceFingerprint() {
+		if (!deviceFingerprintPromise) {
+			deviceFingerprintPromise = (async () => {
+				if (!window.crypto?.subtle) return null;
+				const source = [
+					navigator.userAgent,
+					navigator.language,
+					screen.width,
+					screen.height,
+					screen.colorDepth,
+					Intl.DateTimeFormat().resolvedOptions().timeZone,
+				].join("|");
+				const digest = await crypto.subtle.digest(
+					"SHA-256",
+					new TextEncoder().encode(source),
+				);
+				return Array.from(new Uint8Array(digest), (byte) =>
+					byte.toString(16).padStart(2, "0"),
+				).join("");
+			})().catch(() => null);
+		}
+
+		return deviceFingerprintPromise;
 	}
 
 	function formatLocalTime(value: string) {
@@ -871,6 +897,7 @@ const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
 			submitButton.textContent = "提交中...";
 
 			try {
+				const deviceFingerprint = await getDeviceFingerprint();
 				const response = await fetch(
 					`${root.dataset.apiBaseUrl ?? ""}/api/comments`,
 					{
@@ -887,13 +914,16 @@ const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
 							website,
 							content,
 							turnstileToken: root.__turnstileToken,
+							deviceFingerprint,
 						}),
 					},
 				);
 				const data = (await response.json()) as SubmitResponse;
 				if (!response.ok || !data.ok) {
 					feedback.textContent =
-						data.message || "评论提交失败，请稍后再试。";
+						response.status === 403
+							? "评论提交失败：该来源已被封禁。"
+							: data.message || "评论提交失败，请稍后再试。";
 					return;
 				}
 
