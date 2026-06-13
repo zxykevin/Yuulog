@@ -5,7 +5,7 @@
   <link href="https://yuulog.org/" rel="alternate" type="text/html"/>
   <link href="https://yuulog.org/atom.xml" rel="self" type="application/atom+xml"/>
   <id>https://yuulog.org/</id>
-  <updated>2026-06-13T20:00:13.024Z</updated>
+  <updated>2026-06-13T21:57:40.785Z</updated>
   <language>zh_CN</language>
   <entry>
     <title>从大阪到东京：关西、中部、关东动漫圣地巡礼路线复盘</title>
@@ -316,6 +316,87 @@ pkg install openssh
 </code></pre>
 <p>它的优点是不用域名，配置流程相对直接，手机端和电脑端都能接入。真正需要注意的地方主要有三个：不要泄露节点链接，不要把真实 IP / UUID / 公钥发到公开页面，客户端一定要使用支持 Reality 和 Vision 的内核。</p>
 <p>搭好之后，建议把完整节点信息保存在本地密码管理器里；公开写博客时只记录流程和排错经验，敏感字段统一替换成占位符。</p>
+]]></content>
+    <author>
+      <name>星轨手札</name>
+    </author>
+    <category term="技术笔记"></category>
+  </entry>
+  <entry>
+    <title>YuuComments v0.1.5：标记垃圾并封禁来源</title>
+    <link href="https://yuulog.org/posts/yuucomments-v015-blog-postzh-cn/" rel="alternate" type="text/html"/>
+    <id>https://yuulog.org/posts/yuucomments-v015-blog-postzh-cn/</id>
+    <published>2026-06-13T00:00:00.000Z</published>
+    <updated>2026-06-13T00:00:00.000Z</updated>
+    <summary></summary>
+    <content type="html"><![CDATA[<p>YuuComments v0.1.5 已经发布。这次更新聚焦于后台审核流程：管理员发现垃圾评论后，不仅可以将评论标记为垃圾，还可以直接封禁它的来源，阻止同一来源继续提交新评论。</p>
+<p>相比单纯删除或隐藏评论，v0.1.5 补齐了从“发现垃圾内容”到“阻止来源再次提交”的审核闭环，同时保持了 YuuComments 轻量、无复杂依赖的设计。</p>
+<h2>标记垃圾并封禁来源</h2>
+<p>Admin 评论管理新增了 <strong>Mark spam &amp; ban / 标记垃圾并封禁</strong> 操作。点击后会打开按钮式确认对话框，管理员可以选择封禁目标：</p>
+<ul>
+<li><strong>Device fingerprint</strong>：封禁同一浏览器或设备，默认推荐选项。</li>
+<li><strong>IP hash</strong>：封禁对应 IP hash，可能影响同一网络中的其他用户。</li>
+<li><strong>Both</strong>：同时封禁设备指纹和 IP hash，适合明显的垃圾广告或机器人滥用。</li>
+</ul>
+<p>封禁原因提供 Spam、Ads、Bot、Abuse、Offensive 和 Other 等预设，不再需要手动输入固定格式的内容。确认后，评论会被标记为 <code>spam</code>，可用的来源信息会写入封禁记录。</p>
+<p>对于没有设备指纹的旧评论，后台仍然可以正常将其标记为垃圾，并清楚提示无法完成的封禁部分。</p>
+<h2>提交评论前检查封禁</h2>
+<p>v0.1.5 新增了 <code>comment_bans</code> 表，并为评论增加 <code>device_fingerprint</code> 字段。新评论提交前，Worker 会检查：</p>
+<ul>
+<li>当前请求的 IP hash 是否处于有效封禁中；</li>
+<li>前端提交的设备指纹 hash 是否处于有效封禁中。</li>
+</ul>
+<p>命中任一有效封禁时，后端会在创建评论前返回 <code>403</code>，避免垃圾评论进入数据库。</p>
+<p>设备指纹由浏览器端使用用户代理、语言、屏幕信息和时区等基础信息组合后进行 SHA-256 计算。后端只接收最终 hash，不接收原始设备信息，也没有引入第三方追踪库。</p>
+<h2>独立的封禁来源管理</h2>
+<p>Admin 后台新增了 <strong>Bans / 封禁来源</strong> 页面，用于查看和解除已有封禁。每条记录会显示类型、短 hash、原因、来源评论、创建时间、过期时间和当前状态。</p>
+<p>当同一次操作选择 <strong>Both</strong> 时，相关的 IP 与设备封禁会在界面中合并为一张卡片，减少重复信息。管理员也可以通过卡片上的 Unban 操作解除对应封禁。</p>
+<p>本次新增的 Admin API：</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>路径</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>POST</code></td>
+<td><code>/api/admin/comments/:id/spam-ban</code></td>
+<td>标记评论为垃圾并封禁来源</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/admin/bans</code></td>
+<td>获取封禁来源列表</td>
+</tr>
+<tr>
+<td><code>DELETE</code></td>
+<td><code>/api/admin/bans/:id</code></td>
+<td>解除封禁</td>
+</tr>
+</tbody>
+</table>
+<h2>Admin 中英文切换</h2>
+<p>后台新增了中文和英文界面，并提供语言切换按钮。语言偏好会保存在浏览器本地，评论管理、举报管理、封禁管理和 Spam &amp; Ban 对话框均会使用所选语言。</p>
+<h2>安全边界</h2>
+<p>来源封禁是实用的审核工具，但并不是完整的身份识别系统：</p>
+<ul>
+<li>设备指纹可能被伪造、清除或省略；</li>
+<li>IP hash 封禁可能影响共享同一出口网络的用户；</li>
+<li>未加盐的 IP hash 不能视为匿名数据；</li>
+<li>项目仍保留原始 IP 字段以兼容现有部署。</li>
+</ul>
+<p>因此，建议管理员优先使用设备指纹封禁，并只在明确的垃圾广告或机器人滥用场景下使用 IP 封禁或 Both。</p>
+<h2>升级与部署</h2>
+<p>已有部署在使用 Spam &amp; Ban 前，需要先应用新的 D1 migration：</p>
+<pre><code>pnpm db:migrate:remote
+pnpm deploy:backend
+</code></pre>
+<p>随后重新发布 <code>dist/frontend</code> 和 <code>dist/admin</code>。新部署通过最新 schema 创建数据库时，会直接包含封禁表和设备指纹字段。</p>
+<p>本次更新没有改变公开评论列表只返回 <code>approved</code> 评论的逻辑，也没有影响举报、五次举报转回 pending、Turnstile、Markdown、LaTeX、回复和点赞等现有功能。</p>
+<p>YuuComments v0.1.5 已发布，完整变更与升级说明可查看 <a href="https://github.com/zxykevin/YuuComments/releases/tag/v0.1.5">GitHub Release v0.1.5</a>。</p>
 ]]></content>
     <author>
       <name>星轨手札</name>
