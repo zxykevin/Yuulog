@@ -7,6 +7,7 @@ tags:
   - Cloudflare D1
   - 静态博客
   - 评论系统
+category: 技术笔记
 ---
 
 # YuuComments v0.1.4：给静态博客一个 Cloudflare-native 的评论系统
