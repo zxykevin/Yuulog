@@ -460,16 +460,6 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			animationDelay: 50,
 		},
 		{
-			// 组件类型：访客信息组件
-			type: "visitor-stats",
-			// 组件位置："top" 表示固定在顶部
-			position: "top",
-			// CSS 类名
-			class: "onload-animation",
-			// 动画延迟时间
-			animationDelay: 100,
-		},
-		{
 			// 组件类型：侧栏音乐组件
 			type: "music-sidebar",
 			position: "sticky",
@@ -550,12 +540,11 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 
 	// 侧栏组件布局配置
 	components: {
-		left: ["profile", "announcement", "visitor-stats", "tags", "card-toc"],
+		left: ["profile", "announcement", "tags", "card-toc"],
 		right: ["site-stats", "calendar", "categories", "music-sidebar"],
 		drawer: [
 			"profile",
 			"announcement",
-			"visitor-stats",
 			"music-sidebar",
 			"categories",
 			"tags",
@@ -663,5 +652,3 @@ export const widgetConfigs = {
 	relatedPosts: relatedPostsConfig,
 	randomPosts: randomPostsConfig,
 } as const;
-
-// umamiConfig相关配置已移动至astro.config.mjs中,统计脚本请自行在Layout.astro文件的<head>中插入

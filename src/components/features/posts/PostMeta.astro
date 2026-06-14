@@ -5,7 +5,6 @@ import I18nKey from "../../../i18n/i18nKey";
 import { i18n } from "../../../i18n/translation";
 import { formatDateToYYYYMMDD } from "../../../utils/date-utils";
 import { getTagUrl } from "../../../utils/url-utils";
-import UmamiStats from "../../common/UmamiStats.astro";
 import { Category, EncryptedBadge, PublishedDate, ReadingTime, WordCount } from "./atoms";
 
 interface Props {
@@ -33,9 +32,7 @@ const {
 	tags,
 	hideUpdateDate,
 	hideTagsForMobile,
-	isHome,
 	className = "",
-	id,
 	showOnlyBasicMeta = false,
 	words,
 	minutes,
@@ -119,32 +116,6 @@ const {
 						</div>
 					)}
 				</div>
-			</div>
-		)
-	}
-
-	{
-		!isHome && id && (
-			<div
-				class="flex items-center umami-page-views hidden"
-				data-umami-stat-wrapper
-				data-id={id}
-			>
-				<div class="meta-icon">
-					<Icon
-						name="material-symbols:visibility-outline-rounded"
-						class="text-xl"
-					/>
-				</div>
-				<span class="text-50 text-sm font-medium page-views-display">
-					{i18n(I18nKey.profileStatsPageViews)}{" "}
-					<UmamiStats
-						metric="views"
-						loadingText={i18n(I18nKey.pageViewsLoading)}
-						unavailableText={i18n(I18nKey.pageViewsUnavailable)}
-						hideWhenUnavailable
-					/>
-				</span>
 			</div>
 		)
 	}

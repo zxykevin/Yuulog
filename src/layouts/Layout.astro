@@ -109,7 +109,6 @@ if (!lang) {
 	lang = `${siteConfig.lang}`;
 }
 const siteLang = lang.replace("_", "-");
-const isProduction = import.meta.env.PROD;
 
 const bannerOffsetByPosition = {
 	top: `${BANNER_HEIGHT_EXTEND}vh`,
@@ -168,16 +167,6 @@ if (siteConfig.font) {
 		<AnalyticsScripts
 			thirdPartyAnalytics={siteConfig.thirdPartyAnalytics}
 		/>
-		{
-			isProduction && (
-				<script
-					is:inline
-					defer
-					src="https://cloud.umami.is/script.js"
-					data-website-id="f7131722-db36-4b83-b297-62406cf414c8"
-				/>
-			)
-		}
 
 		<!-- SEO Meta Tags, Open Graph, Twitter Card, Favicons, Theme Init -->
 		<HeadTags

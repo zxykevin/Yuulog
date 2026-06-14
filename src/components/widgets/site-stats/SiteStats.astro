@@ -9,7 +9,6 @@ import {
 	getSortedPosts,
 	getTagList,
 } from "../../../utils/content-utils";
-import UmamiStats from "../../common/UmamiStats.astro";
 import WidgetLayout from "../common/WidgetLayout.astro";
 
 interface Props {
@@ -97,13 +96,6 @@ const stats = [
 		formatted: true,
 	},
 	{
-		icon: "material-symbols:visibility-outline-rounded",
-		label: i18n(I18nKey.siteStatsVisitors),
-		value: "--",
-		dynamic: true,
-		id: "historical-visitors",
-	},
-	{
 		icon: "material-symbols:calendar-clock-outline",
 		label: i18n(I18nKey.siteStatsRunningDays),
 		value: 0, // 将由客户端更新
@@ -145,14 +137,7 @@ const stats = [
 							class="text-base font-bold text-neutral-900 dark:text-neutral-100"
 							data-stat-id={stat.id}
 						>
-							{stat.id === "historical-visitors" ? (
-								<UmamiStats
-									metric="visitors"
-									unavailableText={i18n(
-										I18nKey.profileStatsUnavailable,
-									)}
-								/>
-							) : stat.formatted ? (
+							{stat.formatted ? (
 								formatNumber(stat.value)
 							) : (
 								stat.value
