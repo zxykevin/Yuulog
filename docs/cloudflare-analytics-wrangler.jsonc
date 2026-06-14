@@ -1,0 +1,15 @@
+{
+	"$schema": "../node_modules/wrangler/config-schema.json",
+	"name": "yuulog-cloudflare-analytics",
+	"main": "cloudflare-analytics-worker.js",
+	"compatibility_date": "2026-06-14",
+	"vars": {
+		"CF_ZONE_ID": "eca47f294ea67418e2fda87d48ba183e"
+	},
+	"kv_namespaces": [
+		{
+			"binding": "ANALYTICS_KV",
+			"id": "9defc2372fcc4e70b2514818e0e16f8c"
+		}
+	]
+}

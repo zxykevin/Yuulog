@@ -1,31 +1,62 @@
 const HOSTNAME = "yuulog.org";
-const START_AT = "2026-05-09T00:00:00Z";
+const START_DATE = "2026-05-09";
 const TIME_ZONE = "Europe/Berlin";
+const GRAPHQL_URL = "https://api.cloudflare.com/client/v4/graphql";
 
-const QUERY = `
-query Analytics(
+const CACHE_KEYS = {
+	summary: "analytics:summary",
+	details: "analytics:details",
+	base: "analytics:base",
+};
+const SUMMARY_MAX_AGE = 5 * 60;
+const DETAILS_MAX_AGE = 60 * 60;
+const BASE_MAX_AGE = 5 * 60;
+const CACHE_RETENTION = 7 * 24 * 60 * 60;
+
+const SUMMARY_QUERY = `
+query Summary(
 	$zoneTag: string!,
 	$active: ZoneHttpRequestsAdaptiveGroupsFilter_InputObject!,
-	$today: ZoneHttpRequestsAdaptiveGroupsFilter_InputObject!,
-	$yesterday: ZoneHttpRequestsAdaptiveGroupsFilter_InputObject!,
-	$daily: ZoneHttpRequests1dGroupsFilter_InputObject!
+	$today: ZoneHttpRequestsAdaptiveGroupsFilter_InputObject!
 ) {
 	viewer {
 		zones(filter: { zoneTag: $zoneTag }) {
 			active: httpRequestsAdaptiveGroups(limit: 1, filter: $active) {
-				count
 				sum { visits }
 			}
 			today: httpRequestsAdaptiveGroups(limit: 1, filter: $today) {
-				count
-				sum { visits edgeResponseBytes }
+				sum { visits }
 			}
-			yesterday: httpRequestsAdaptiveGroups(limit: 1, filter: $yesterday) {
-				count
-			}
+		}
+	}
+}`;
+
+const BASE_QUERY = `
+query Base($zoneTag: string!, $daily: ZoneHttpRequests1dGroupsFilter_InputObject!) {
+	viewer {
+		zones(filter: { zoneTag: $zoneTag }) {
 			days: httpRequests1dGroups(limit: 100, filter: $daily) {
 				dimensions { date }
 				sum { requests pageViews }
+			}
+		}
+	}
+}`;
+
+const DETAILS_QUERY = `
+query Details(
+	$zoneTag: string!,
+	$today: ZoneHttpRequestsAdaptiveGroupsFilter_InputObject!,
+	$yesterday: ZoneHttpRequestsAdaptiveGroupsFilter_InputObject!
+) {
+	viewer {
+		zones(filter: { zoneTag: $zoneTag }) {
+			today: httpRequestsAdaptiveGroups(limit: 1, filter: $today) {
+				count
+				sum { edgeResponseBytes }
+			}
+			yesterday: httpRequestsAdaptiveGroups(limit: 1, filter: $yesterday) {
+				count
 			}
 			countries: httpRequestsAdaptiveGroups(
 				limit: 30,
@@ -66,15 +97,28 @@ query Paths(
 	}
 }`;
 
-function json(body, status = 200) {
-	return new Response(JSON.stringify(body), {
+function corsOrigin(request) {
+	const origin = request.headers.get("Origin");
+	if (
+		origin === "https://yuulog.org" ||
+		origin === "http://127.0.0.1:4321" ||
+		origin === "http://localhost:4321"
+	) {
+		return origin;
+	}
+	return "https://yuulog.org";
+}
+
+function json(request, body, status = 200) {
+	return new Response(status === 204 ? null : JSON.stringify(body), {
 		status,
 		headers: {
-			"Access-Control-Allow-Origin": "*",
+			"Access-Control-Allow-Origin": corsOrigin(request),
 			"Access-Control-Allow-Methods": "GET, OPTIONS",
 			"Access-Control-Allow-Headers": "Content-Type",
-			"Cache-Control": "public, max-age=60",
+			"Cache-Control": "public, max-age=60, stale-while-revalidate=300",
 			"Content-Type": "application/json; charset=utf-8",
+			Vary: "Origin",
 		},
 	});
 }
@@ -125,7 +169,22 @@ function berlinMidnightUtc(year, month, day) {
 	return new Date(utc);
 }
 
-function filter(start, end) {
+function dateContext(now = new Date()) {
+	const { year, month, day } = berlinDateParts(now);
+	const todayStart = berlinMidnightUtc(year, month, day);
+	const yesterdayStart = berlinMidnightUtc(year, month, day - 1);
+	const yesterdayParts = berlinDateParts(new Date(todayStart.getTime() - 1));
+	return {
+		now,
+		todayStart,
+		yesterdayStart,
+		today: `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`,
+		yesterday: `${yesterdayParts.year}-${String(yesterdayParts.month).padStart(2, "0")}-${String(yesterdayParts.day).padStart(2, "0")}`,
+		monthStart: `${year}-${String(month).padStart(2, "0")}-01`,
+	};
+}
+
+function adaptiveFilter(start, end) {
 	return {
 		datetime_geq: start.toISOString(),
 		datetime_leq: end.toISOString(),
@@ -134,188 +193,201 @@ function filter(start, end) {
 	};
 }
 
-function first(groups) {
-	return groups?.[0] ?? {};
-}
-
-function count(groups) {
-	return Number(first(groups).count ?? 0);
-}
-
-function visits(groups) {
-	return Number(first(groups).sum?.visits ?? 0);
-}
-
-function summarize(zone, weekPaths, dates) {
-	const cacheTotal = zone.cache.reduce((sum, item) => sum + item.count, 0);
-	const cacheHits = zone.cache
-		.filter((item) =>
-			["hit", "revalidated", "stale", "updating"].includes(
-				item.dimensions.cacheStatus,
-			),
-		)
-		.reduce((sum, item) => sum + item.count, 0);
-
-	const monthlyRequests = zone.days
-		.filter((item) => item.dimensions.date >= dates.monthStart)
-		.reduce((sum, item) => sum + item.sum.requests, 0);
-	const monthlyPageViews = zone.days
-		.filter((item) => item.dimensions.date >= dates.monthStart)
-		.reduce((sum, item) => sum + item.sum.pageViews, 0);
-	const totalRequests = zone.days.reduce(
-		(sum, item) => sum + item.sum.requests,
-		0,
-	);
-	const totalPageViews = zone.days.reduce(
-		(sum, item) => sum + item.sum.pageViews,
-		0,
-	);
-	const todayPageViews =
-		zone.days.find((item) => item.dimensions.date === dates.today)?.sum
-			.pageViews ?? 0;
-	const yesterdayPageViews =
-		zone.days.find((item) => item.dimensions.date === dates.yesterday)?.sum
-			.pageViews ?? 0;
-
-	return {
-		ok: true,
-		source: "cloudflare-graphql-analytics",
-		active: visits(zone.active),
-		todayVisitors: visits(zone.today),
-		todayViews: todayPageViews,
-		yesterdayViews: yesterdayPageViews,
-		monthViews: monthlyPageViews,
-		totalViews: totalPageViews,
-		todayVisits: visits(zone.today),
-		todayRequests: count(zone.today),
-		yesterdayRequests: count(zone.yesterday),
-		monthRequests: monthlyRequests,
-		popularPosts7d: weekPaths,
-		countries: zone.countries.map((item) => ({
-			country: item.dimensions.clientCountryName,
-			requests: item.count,
-		})),
-		bandwidthBytes: Number(first(zone.today).sum?.edgeResponseBytes ?? 0),
-		cacheHitRate: cacheTotal > 0 ? cacheHits / cacheTotal : null,
-		botRequestRatio: null,
-		botRequestRatioUnavailableReason:
-			"botManagementDecision requires a Cloudflare Bot Management plan",
-		updatedAt: new Date().toISOString(),
-	};
-}
-
-async function fetchAnalytics(env) {
-	const now = new Date();
-	const { year, month, day } = berlinDateParts(now);
-	const todayStart = berlinMidnightUtc(year, month, day);
-	const yesterdayStart = berlinMidnightUtc(year, month, day - 1);
-	const dailyToday = now.toISOString().slice(0, 10);
-	const dailyYesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
-		.toISOString()
-		.slice(0, 10);
-	const dailyMonthStart = `${now.getUTCFullYear()}-${String(
-		now.getUTCMonth() + 1,
-	).padStart(2, "0")}-01`;
-
-	const headers = {
-		Authorization: `Bearer ${env.CLOUDFLARE_ANALYTICS_TOKEN}`,
-		"Content-Type": "application/json",
-	};
-	const response = await fetch("https://api.cloudflare.com/client/v4/graphql", {
+async function graphql(env, query, variables) {
+	if (!env.CF_API_TOKEN || !env.CF_ZONE_ID) {
+		throw new Error("CF_API_TOKEN and CF_ZONE_ID must be configured");
+	}
+	const response = await fetch(GRAPHQL_URL, {
 		method: "POST",
-		headers,
-		body: JSON.stringify({
-			query: QUERY,
-			variables: {
-				zoneTag: env.CLOUDFLARE_ZONE_ID,
-				active: filter(new Date(now.getTime() - 5 * 60 * 1000), now),
-				today: filter(todayStart, now),
-				yesterday: filter(
-					yesterdayStart,
-					new Date(todayStart.getTime() - 1),
-				),
-				daily: {
-					date_geq: START_AT.slice(0, 10),
-					date_leq: now.toISOString().slice(0, 10),
-				},
-			},
-		}),
+		headers: {
+			Authorization: `Bearer ${env.CF_API_TOKEN}`,
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({ query, variables }),
 	});
 	const body = await response.json();
 	if (!response.ok || body.errors?.length) {
 		throw new Error(body.errors?.[0]?.message || `Cloudflare API ${response.status}`);
 	}
-	const pathRanges = Array.from({ length: 7 }, (_, index) => {
-		const end = new Date(now.getTime() - index * 24 * 60 * 60 * 1000);
-		const start = new Date(end.getTime() - 24 * 60 * 60 * 1000 + 1);
-		return filter(start, end);
-	});
-	const pathResponses = await Promise.all(
-		pathRanges.map(async (pathFilter) => {
-			const pathResponse = await fetch(
-				"https://api.cloudflare.com/client/v4/graphql",
-				{
-					method: "POST",
-					headers,
-					body: JSON.stringify({
-						query: PATH_QUERY,
-						variables: {
-							zoneTag: env.CLOUDFLARE_ZONE_ID,
-							filter: pathFilter,
-						},
-					}),
-				},
-			);
-			const pathBody = await pathResponse.json();
-			if (!pathResponse.ok || pathBody.errors?.length) {
-				throw new Error(
-					pathBody.errors?.[0]?.message ||
-						`Cloudflare API ${pathResponse.status}`,
-				);
-			}
-			return pathBody.data.viewer.zones[0].paths;
-		}),
+	return body.data.viewer.zones[0];
+}
+
+async function readCache(env, key) {
+	const cached = await env.ANALYTICS_KV.get(key, "json");
+	if (!cached?.updatedAt || !cached?.data) return null;
+	return {
+		data: cached.data,
+		updatedAt: cached.updatedAt,
+		age: Math.max(0, Math.floor((Date.now() - Date.parse(cached.updatedAt)) / 1000)),
+	};
+}
+
+async function writeCache(env, key, data) {
+	const updatedAt = new Date().toISOString();
+	await env.ANALYTICS_KV.put(
+		key,
+		JSON.stringify({ data, updatedAt }),
+		{ expirationTtl: CACHE_RETENTION },
 	);
-	const postCounts = new Map();
-	pathResponses.flat().forEach((item) => {
-		const path = item.dimensions.clientRequestPath;
-		if (!path.startsWith("/posts/")) return;
-		postCounts.set(path, (postCounts.get(path) ?? 0) + item.count);
+	return { data, updatedAt, age: 0 };
+}
+
+async function cachedResult(env, ctx, key, maxAge, refresh) {
+	const cached = await readCache(env, key);
+	if (!cached) return withCacheMeta(await refresh(), false);
+	const stale = cached.age > maxAge;
+	if (stale) {
+		ctx.waitUntil(refresh().catch((error) => console.error(`Refresh ${key} failed`, error)));
+	}
+	return withCacheMeta(cached, stale);
+}
+
+function withCacheMeta(entry, stale) {
+	return {
+		...entry.data,
+		updatedAt: entry.updatedAt,
+		stale,
+		cacheAgeSeconds: entry.age,
+	};
+}
+
+async function getBase(env) {
+	const cached = await readCache(env, CACHE_KEYS.base);
+	if (cached && cached.age <= BASE_MAX_AGE) return cached.data;
+	const dates = dateContext();
+	const zone = await graphql(env, BASE_QUERY, {
+		zoneTag: env.CF_ZONE_ID,
+		daily: { date_geq: START_DATE, date_leq: dates.today },
 	});
-	const weekPaths = Array.from(postCounts, ([path, requests]) => ({
-		path,
-		requests,
-	}))
+	const data = { days: zone.days };
+	await writeCache(env, CACHE_KEYS.base, data);
+	return data;
+}
+
+function sumDays(days, field, from) {
+	return days
+		.filter((item) => !from || item.dimensions.date >= from)
+		.reduce((sum, item) => sum + Number(item.sum[field] ?? 0), 0);
+}
+
+async function refreshSummary(env) {
+	const dates = dateContext();
+	const [zone, base] = await Promise.all([
+		graphql(env, SUMMARY_QUERY, {
+			zoneTag: env.CF_ZONE_ID,
+			active: adaptiveFilter(new Date(dates.now.getTime() - 5 * 60 * 1000), dates.now),
+			today: adaptiveFilter(dates.todayStart, dates.now),
+		}),
+		getBase(env),
+	]);
+	const todayVisits = Number(zone.today?.[0]?.sum?.visits ?? 0);
+	const summary = {
+		ok: true,
+		source: "cloudflare-graphql-analytics",
+		active: Number(zone.active?.[0]?.sum?.visits ?? 0),
+		todayVisitors: todayVisits,
+		todayViews: sumDays(base.days, "pageViews", dates.today),
+		yesterdayViews: Number(
+			base.days.find((item) => item.dimensions.date === dates.yesterday)?.sum.pageViews ?? 0,
+		),
+		monthViews: sumDays(base.days, "pageViews", dates.monthStart),
+		totalViews: sumDays(base.days, "pageViews"),
+		todayVisits,
+	};
+	return writeCache(env, CACHE_KEYS.summary, summary);
+}
+
+async function popularPosts(env, dates) {
+	const ranges = Array.from({ length: 7 }, (_, index) => {
+		const end = new Date(dates.now.getTime() - index * 24 * 60 * 60 * 1000);
+		return adaptiveFilter(new Date(end.getTime() - 24 * 60 * 60 * 1000 + 1), end);
+	});
+	const zones = await Promise.all(
+		ranges.map((range) =>
+			graphql(env, PATH_QUERY, { zoneTag: env.CF_ZONE_ID, filter: range }),
+		),
+	);
+	const counts = new Map();
+	zones.flatMap((zone) => zone.paths).forEach((item) => {
+		const path = item.dimensions.clientRequestPath;
+		if (path.startsWith("/posts/")) counts.set(path, (counts.get(path) ?? 0) + item.count);
+	});
+	return Array.from(counts, ([path, requests]) => ({ path, requests }))
 		.sort((a, b) => b.requests - a.requests)
 		.slice(0, 7);
+}
 
-	return summarize(
-		body.data.viewer.zones[0],
-		weekPaths,
-		{
-			today: dailyToday,
-			yesterday: dailyYesterday,
-			monthStart: dailyMonthStart,
-		},
-	);
+async function refreshDetails(env) {
+	const dates = dateContext();
+	const [zone, base, posts] = await Promise.all([
+		graphql(env, DETAILS_QUERY, {
+			zoneTag: env.CF_ZONE_ID,
+			today: adaptiveFilter(dates.todayStart, dates.now),
+			yesterday: adaptiveFilter(
+				dates.yesterdayStart,
+				new Date(dates.todayStart.getTime() - 1),
+			),
+		}),
+		getBase(env),
+		popularPosts(env, dates),
+	]);
+	const cacheTotal = zone.cache.reduce((sum, item) => sum + item.count, 0);
+	const cacheHits = zone.cache
+		.filter((item) => ["hit", "revalidated", "stale", "updating"].includes(item.dimensions.cacheStatus))
+		.reduce((sum, item) => sum + item.count, 0);
+	const details = {
+		ok: true,
+		source: "cloudflare-graphql-analytics",
+		todayRequests: Number(zone.today?.[0]?.count ?? 0),
+		yesterdayRequests: Number(zone.yesterday?.[0]?.count ?? 0),
+		monthRequests: sumDays(base.days, "requests", dates.monthStart),
+		popularPosts7d: posts,
+		countries: zone.countries.map((item) => ({
+			country: item.dimensions.clientCountryName,
+			requests: item.count,
+		})),
+		bandwidthBytes: Number(zone.today?.[0]?.sum?.edgeResponseBytes ?? 0),
+		cacheHitRate: cacheTotal > 0 ? cacheHits / cacheTotal : null,
+		botRequestRatio: null,
+		botRequestRatioUnavailableReason: "Unavailable on Cloudflare Free plan",
+	};
+	return writeCache(env, CACHE_KEYS.details, details);
+}
+
+async function summary(env, ctx) {
+	return cachedResult(env, ctx, CACHE_KEYS.summary, SUMMARY_MAX_AGE, () => refreshSummary(env));
+}
+
+async function details(env, ctx) {
+	return cachedResult(env, ctx, CACHE_KEYS.details, DETAILS_MAX_AGE, () => refreshDetails(env));
 }
 
 export default {
-	async fetch(request, env) {
-		if (request.method === "OPTIONS") return json(null, 204);
-		if (request.method !== "GET") return json({ ok: false }, 405);
+	async fetch(request, env, ctx) {
+		if (request.method === "OPTIONS") return json(request, null, 204);
+		if (request.method !== "GET") return json(request, { ok: false }, 405);
 		try {
-			return json(await fetchAnalytics(env));
+			const path = new URL(request.url).pathname.replace(/\/+$/, "") || "/";
+			if (path === "/api/analytics/summary") return json(request, await summary(env, ctx));
+			if (path === "/api/analytics/details") return json(request, await details(env, ctx));
+			if (path === "/" || path === "/api/analytics") {
+				// Compatibility endpoint. New clients should request summary/details separately.
+				const [summaryData, detailsData] = await Promise.all([summary(env, ctx), details(env, ctx)]);
+				return json(request, {
+					...summaryData,
+					...detailsData,
+					stale: summaryData.stale || detailsData.stale,
+					cacheAgeSeconds: Math.max(summaryData.cacheAgeSeconds, detailsData.cacheAgeSeconds),
+				});
+			}
+			return json(request, { ok: false, error: "Not found" }, 404);
 		} catch (error) {
 			console.error(error);
-			return json(
-				{
-					ok: false,
-					error: "Cloudflare Analytics is temporarily unavailable",
-					updatedAt: new Date().toISOString(),
-				},
-				502,
-			);
+			return json(request, {
+				ok: false,
+				error: "Cloudflare Analytics is temporarily unavailable",
+				updatedAt: new Date().toISOString(),
+			}, 502);
 		}
 	},
 };
