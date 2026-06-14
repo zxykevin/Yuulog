@@ -460,6 +460,13 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			animationDelay: 50,
 		},
 		{
+			// Cloudflare Web Analytics 访客统计状态
+			type: "visitor-stats",
+			position: "top",
+			class: "onload-animation",
+			animationDelay: 100,
+		},
+		{
 			// 组件类型：侧栏音乐组件
 			type: "music-sidebar",
 			position: "sticky",
@@ -540,11 +547,12 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 
 	// 侧栏组件布局配置
 	components: {
-		left: ["profile", "announcement", "tags", "card-toc"],
+		left: ["profile", "announcement", "visitor-stats", "tags", "card-toc"],
 		right: ["site-stats", "calendar", "categories", "music-sidebar"],
 		drawer: [
 			"profile",
 			"announcement",
+			"visitor-stats",
 			"music-sidebar",
 			"categories",
 			"tags",
