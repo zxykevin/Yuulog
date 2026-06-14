@@ -15,6 +15,23 @@ import jpTravel012 from "../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo
 import jpTravel013 from "../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/013.jpg";
 import jpTravel014 from "../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/014.jpg";
 
+const lovelyPictureImages = import.meta.glob<ImageMetadata>(
+	"../assets/gallery/some-lovely-pictures/*.webp",
+	{ eager: true, import: "default" },
+);
+const lovelyPictureCover =
+	lovelyPictureImages[
+		"../assets/gallery/some-lovely-pictures/cover.webp"
+	];
+const lovelyPicturePhotos = Object.entries(lovelyPictureImages)
+	.filter(([path]) => !path.endsWith("/cover.webp"))
+	.sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
+	.map(([, src], index) => ({
+		src,
+		alt: `Lovely picture ${index + 1}`,
+		caption: `Photo ${index + 1}`,
+	}));
+
 export interface GalleryPhoto {
 	src: ImageMetadata;
 	alt: string;
@@ -115,6 +132,16 @@ export const galleries: Gallery[] = [
 				caption: "旅途接近尾声，留下最后一段清晰的记忆。",
 			},
 		],
+	},
+	{
+		slug: "some-lovely-pictures",
+		title: "萌物",
+		description: "The world is vast, and you have to go explore it.",
+		date: "2025-08-01",
+		cover: lovelyPictureCover,
+		location: "Bilibili",
+		tags: ["Kawai", "Cute", "Moe"],
+		photos: lovelyPicturePhotos,
 	},
 ];
 
