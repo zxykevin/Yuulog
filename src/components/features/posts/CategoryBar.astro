@@ -9,7 +9,7 @@ import { getCategoryUrl, url } from "@/utils/url-utils";
 const categories = await getCategoryList();
 const totalPosts = (await getSortedPostsList()).length;
 const homeUrl = url("/");
-const archiveUrl = url("/archive/");
+const archiveUrl = url("/posts/");
 ---
 
 <div
@@ -142,9 +142,9 @@ const archiveUrl = url("/archive/");
 			/\/$/,
 			"",
 		);
-		// 归档页路径也需要标准化，避免 /archive 与 /archive/ 不一致导致无法匹配
+		// 文章页路径也需要标准化，避免 /posts 与 /posts/ 不一致导致无法匹配
 		const archivePath = (
-			bar.getAttribute("data-archive-path") || "/archive"
+			bar.getAttribute("data-archive-path") || "/posts"
 		).replace(/\/$/, "");
 		const isHome =
 			pathname === homePath || pathname === "" || pathname === "/";

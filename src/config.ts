@@ -270,19 +270,9 @@ export const navBarConfig: NavBarConfig = {
 	links: [
 		LinkPreset.Home,
 		{
-			name: "旅行记录",
-			url: "/archive/?category=旅行记录",
-			icon: "material-symbols:travel-explore",
-		},
-		{
-			name: "德国留学",
-			url: "/archive/?category=德国留学",
-			icon: "material-symbols:school",
-		},
-		{
-			name: "技术笔记",
-			url: "/archive/?category=技术笔记",
-			icon: "material-symbols:terminal",
+			name: "文章",
+			url: "/posts/",
+			icon: "material-symbols:archive",
 		},
 		{
 			name: "图库",
@@ -290,12 +280,37 @@ export const navBarConfig: NavBarConfig = {
 			icon: "material-symbols:photo-library",
 		},
 		{
+			name: "时间线",
+			url: "/timeline/",
+			icon: "material-symbols:timeline",
+		},
+		{
+			name: "技能",
+			url: "/skills/",
+			icon: "material-symbols:code",
+		},
+		{
+			name: "日记",
+			url: "/diary/",
+			icon: "material-symbols:edit-note",
+		},
+		{
+			name: "设备",
+			url: "/devices/",
+			icon: "material-symbols:devices",
+		},
+		{
+			name: "番剧",
+			url: "/anime/",
+			icon: "material-symbols:live-tv",
+		},
+		{
 			name: "关于我",
 			url: "/about/",
 			icon: "material-symbols:person",
 		},
 		{
-			name: "友情链接",
+			name: "友链",
 			url: "/friends/",
 			icon: "material-symbols:diversity-1",
 		},

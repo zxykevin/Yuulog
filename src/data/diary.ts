@@ -3,6 +3,7 @@
 
 export interface DiaryItem {
 	id: number;
+	title?: string;
 	content: string;
 	date: string;
 	images?: string[];
@@ -11,14 +12,13 @@ export interface DiaryItem {
 	tags?: string[];
 }
 
-// 示例日记数据
 const diaryData: DiaryItem[] = [
 	{
 		id: 1,
-		content:
-			"The falling speed of cherry blossoms is five centimeters per second!",
-		date: "2025-01-15T10:30:00Z",
-		images: ["/images/diary/sakura.jpg", "/images/diary/1.webp"],
+		title: "日记页面正在整理中",
+		content: "这里之后会放一些生活记录、碎片想法和旅行笔记。",
+		date: "2026-06-15T00:00:00+02:00",
+		images: ["/images/diary/diary-0-1.webp"],
 	},
 ];
 

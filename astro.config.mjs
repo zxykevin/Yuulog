@@ -113,7 +113,14 @@ export default defineConfig({
 			preprocess: vitePreprocess(),
 		}),
 		sitemap({
-			filter: (page) => !new URL(page).pathname.startsWith("/admin/"),
+			filter: (page) => {
+				const pathname = new URL(page).pathname;
+				return (
+					!pathname.startsWith("/admin/") &&
+					pathname !== "/archive/" &&
+					pathname !== "/archives/"
+				);
+			},
 		}),
 	],
 	markdown: {
