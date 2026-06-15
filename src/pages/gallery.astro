@@ -3,7 +3,7 @@ import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { Image } from "astro:assets";
 import { Icon } from "astro-icon/components";
 
-import { galleries } from "../data/galleries";
+import { galleries, isRemoteImage } from "../data/galleries";
 
 export const prerender = true;
 
@@ -32,15 +32,26 @@ const formatDate = (date: string) => dateFormatter.format(new Date(date));
 					<a class="gallery-card" href={`/gallery/${gallery.slug}/`}>
 						<span class="gallery-card-glow" aria-hidden="true" />
 						<div class="gallery-cover">
-							<Image
-								src={gallery.cover}
-								alt={`${gallery.title} 封面`}
-								width={640}
-								format="webp"
-								quality={80}
-								loading="lazy"
-								decoding="async"
-							/>
+							{isRemoteImage(gallery.cover) ? (
+								<img
+									src={gallery.cover}
+									alt={`${gallery.title} 封面`}
+									width="1200"
+									height="750"
+									loading="lazy"
+									decoding="async"
+								/>
+							) : (
+								<Image
+									src={gallery.cover}
+									alt={`${gallery.title} 封面`}
+									width={640}
+									format="webp"
+									quality={80}
+									loading="lazy"
+									decoding="async"
+								/>
+							)}
 						</div>
 						<div class="gallery-card-body">
 							<div class="gallery-card-meta">

@@ -3,7 +3,7 @@ import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { getImage } from "astro:assets";
 import { Icon } from "astro-icon/components";
 
-import { galleries, type Gallery } from "../../data/galleries";
+import { galleries, isRemoteImage, type Gallery } from "../../data/galleries";
 
 export const prerender = true;
 
@@ -26,15 +26,34 @@ const dateFormatter = new Intl.DateTimeFormat("zh-CN", {
 
 const formattedDate = dateFormatter.format(new Date(gallery.date));
 const optimizedPhotos = await Promise.all(
-	gallery.photos.map(async (photo) => ({
-		...photo,
-		preview: await getImage({
+	gallery.photos.map(async (photo) => {
+		if (isRemoteImage(photo.src)) {
+			return {
+				...photo,
+				preview: {
+					src: photo.src,
+					width: 1200,
+					height: 900,
+				},
+			};
+		}
+
+		const preview = await getImage({
 			src: photo.src,
 			width: 640,
 			format: "webp",
 			quality: 80,
-		}),
-	})),
+		});
+
+		return {
+			...photo,
+			preview: {
+				src: preview.src,
+				width: preview.attributes.width,
+				height: preview.attributes.height,
+			},
+		};
+	}),
 );
 ---
 
@@ -92,8 +111,8 @@ const optimizedPhotos = await Promise.all(
 							<img
 								src={photo.preview.src}
 								alt={photo.alt}
-								width={photo.preview.attributes.width}
-								height={photo.preview.attributes.height}
+								width={photo.preview.width}
+								height={photo.preview.height}
 								loading="lazy"
 								decoding="async"
 							/>

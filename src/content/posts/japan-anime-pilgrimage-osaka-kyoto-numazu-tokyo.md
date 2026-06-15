@@ -48,7 +48,7 @@ KIX 关西机场 -> 大阪市区 -> 心斋桥 / 道顿堀
 
 大阪更适合作为缓冲站，而不是一上来就暴走。
 
-![大阪道顿堀夜晚的格力高广告牌](../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/001.jpg)
+![大阪道顿堀夜晚的格力高广告牌](https://img.yuulog.org/gallery/osaka-tokyo/017.webp)
 
 *落地后的第一晚，道顿堀和心斋桥把“终于到日本了”的感觉一下子拉满。*
 
@@ -64,11 +64,11 @@ KIX 关西机场 -> 大阪市区 -> 心斋桥 / 道顿堀
 
 这一天的重点不是“刷满所有景点”，而是完成城市切换。拖着行李时尤其要提前想好寄存，不要把自己变成移动仓库。
 
-![大阪城天守阁](../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/002.jpg)
+![大阪城天守阁](https://img.yuulog.org/gallery/osaka-tokyo/030.webp)
 
 *上午从大阪城开始，把关西第一段行程的城市感建立起来。*
 
-![奈良公园里喂鹿](../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/003.jpg)
+![奈良公园里喂鹿](https://img.yuulog.org/gallery/osaka-tokyo/057.webp)
 
 *奈良适合夹在大阪和京都之间，节奏会自然慢下来。*
 
@@ -82,27 +82,27 @@ KIX 关西机场 -> 大阪市区 -> 心斋桥 / 道顿堀
 
 京都热门点一定要早起。伏见稻荷如果晚去，千本鸟居基本就是人挤人；早上去才能拍到比较干净的画面。清水寺、二年坂三年坂和八坂神社也一样，越晚人越多。
 
-![伏见稻荷的千本鸟居](../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/004.jpg)
+![伏见稻荷的千本鸟居](https://img.yuulog.org/gallery/osaka-tokyo/119.webp)
 
 *早起去伏见稻荷的回报很直接：鸟居之间终于有能呼吸的空隙。*
 
-![清水寺舞台与京都城市远景](../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/005.jpg)
+![清水寺舞台与京都城市远景](https://img.yuulog.org/gallery/osaka-tokyo/128.webp)
 
 *清水寺这一段基本靠走，天气和人流都会直接影响体验。*
 
 下午去宇治，是《響け！ユーフォニアム》的核心巡礼线。宇治桥、宇治川、平等院、抹茶甜品店、京吹取景地，都很适合慢慢走。宇治和京都市区的气质完全不同：城市更小，河边更安静，作品记忆和现实地点叠在一起的感觉更强。
 
-![宇治的京阿尼作品展示](../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/006.jpg)
+![宇治的京阿尼作品展示](https://img.yuulog.org/gallery/osaka-tokyo/157.webp)
 
 *宇治不只是观光点，更像是把京阿尼作品记忆放回现实街道里。*
 
-![宇治抹茶芭菲和抹茶](../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/007.jpg)
+![宇治抹茶芭菲和抹茶](https://img.yuulog.org/gallery/osaka-tokyo/195.webp)
 
 *抹茶甜品不是单纯补给，它会和宇治这个地点本身绑定在一起。*
 
 晚上回京都后，可以补玉子市场相关商店街。这样 Day 3 实际上变成了“京都传统观光 + 京阿尼作品巡礼 + 宇治京吹核心巡礼”。
 
-![京都商店街里的玉子市场角色牌](../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/008.jpg)
+![京都商店街里的玉子市场角色牌](https://img.yuulog.org/gallery/osaka-tokyo/219.webp)
 
 *玉子市场相关商店街更像隐藏支线，适合放在京都夜晚收尾。*
 
@@ -116,7 +116,7 @@ KIX 关西机场 -> 大阪市区 -> 心斋桥 / 道顿堀
 
 丰乡小学是《K-ON!》非常重要的巡礼地。它交通不算方便，对普通游客吸引力没那么强，但对作品粉丝非常值。校舍、楼梯、部室、周边小店，都有一种不是商业景点、而是真正为了作品走到这里的感觉。
 
-![丰乡小学校旧校舍里的茶会布置](../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/009.jpg)
+![丰乡小学校旧校舍里的茶会布置](https://img.yuulog.org/gallery/osaka-tokyo/285.webp)
 
 *丰乡小学的魅力在于它不像普通景点，更像把作品里的部室空气保留下来了。*
 
@@ -134,7 +134,7 @@ KIX 关西机场 -> 大阪市区 -> 心斋桥 / 道顿堀
 
 晚上在沼津吃了魚がし鮨本店，比纯游客区回转寿司更有地方鱼获特色，也成了这次临时改线后的惊喜。
 
-![沼津海鲜丼](../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/010.jpg)
+![沼津海鲜丼](https://img.yuulog.org/gallery/osaka-tokyo/356.webp)
 
 *临时改到沼津之后，骏河湾海鲜成了第一份补偿。*
 
@@ -150,7 +150,7 @@ KIX 关西机场 -> 大阪市区 -> 心斋桥 / 道顿堀
 
 这一天最有记忆点的是骏河湾、富士山和痛船同框。原本河口湖看富士山失败，但沼津给了另一种更有个人主题的富士山：不是单纯风景，而是“海 + 富士山 + 动漫巡礼”的组合。
 
-![骏河湾、富士山与 LoveLive 痛船同框](../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/014.jpg)
+![骏河湾、富士山与 LoveLive 痛船同框](https://img.yuulog.org/gallery/osaka-tokyo/649.webp)
 
 *这张就是河口湖取消后的神展开：富士山、骏河湾、LoveLive 痛船全都赶上了。*
 
@@ -178,15 +178,15 @@ KIX 关西机场 -> 大阪市区 -> 心斋桥 / 道顿堀
 
 东京还很适合用长焦拍街景：坡道、铁路、十字路口、城市压缩感，都能拍出很干净的画面。《你的名字。》相关地点和东京坡道巡礼，也很适合放进东京段。
 
-![东京夜景与东京塔](../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/011.jpg)
+![东京夜景与东京塔](https://img.yuulog.org/gallery/osaka-tokyo/691.webp)
 
 *SHIBUYA SKY 或类似高处视角很适合第一次东京旅行，用来建立城市尺度。*
 
-![赤羽桥站前的东京塔夜景](../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/012.jpg)
+![赤羽桥站前的东京塔夜景](https://img.yuulog.org/gallery/osaka-tokyo/710.webp)
 
 *东京塔近距离夜景更像城市巡礼的注脚，路牌和塔同框很有现场感。*
 
-![台场独角兽高达](../../assets/gallery/osaka-kyoto-uji-toyosato-numazu-tokyo-2026/013.jpg)
+![台场独角兽高达](https://img.yuulog.org/gallery/osaka-tokyo/728.webp)
 
 *台场适合作为东京段的海湾支线，独角兽高达是很稳定的二次元地标。*
 

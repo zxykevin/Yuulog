@@ -62,6 +62,10 @@ coverage/
 playwright-report/
 test-results/
 
+# local gallery source and processed images
+photos/raw/
+photos/processed/
+
 # local cache/temp files
 .cache/
 *.tmp
