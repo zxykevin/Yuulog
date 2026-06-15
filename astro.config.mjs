@@ -118,7 +118,8 @@ export default defineConfig({
 				return (
 					!pathname.startsWith("/admin/") &&
 					pathname !== "/archive/" &&
-					pathname !== "/archives/"
+					pathname !== "/archives/" &&
+					pathname !== "/albums/"
 				);
 			},
 		}),
