@@ -1,6 +1,6 @@
 ---
 import MainGridLayout from "@layouts/MainGridLayout.astro";
-import { getImage } from "astro:assets";
+import { getImage, Image } from "astro:assets";
 import { Icon } from "astro-icon/components";
 
 import { galleries, isRemoteImage, type Gallery } from "../../data/galleries";
@@ -8,10 +8,12 @@ import { galleries, isRemoteImage, type Gallery } from "../../data/galleries";
 export const prerender = true;
 
 export const getStaticPaths = () =>
-	galleries.map((gallery) => ({
-		params: { slug: gallery.slug },
-		props: { gallery },
-	}));
+	galleries
+		.flatMap((gallery) => [gallery, ...(gallery.children ?? [])])
+		.map((gallery) => ({
+			params: { slug: gallery.slug },
+			props: { gallery },
+		}));
 
 interface Props {
 	gallery: Gallery;
@@ -25,6 +27,7 @@ const dateFormatter = new Intl.DateTimeFormat("zh-CN", {
 });
 
 const formattedDate = dateFormatter.format(new Date(gallery.date));
+const childGalleries = gallery.children ?? [];
 const optimizedPhotos = await Promise.all(
 	gallery.photos.map(async (photo) => {
 		if (isRemoteImage(photo.src)) {
@@ -96,33 +99,68 @@ const optimizedPhotos = await Promise.all(
 
 		<div class="photo-grid" aria-label={`${gallery.title} 图片列表`}>
 			{
-				optimizedPhotos.map((photo) => (
-					<figure class="photo-card">
-						<button
-							class="photo-button"
-							type="button"
-							data-fancybox={`gallery-${gallery.slug}`}
-							data-fancybox-no-hash
-							data-src={photo.preview.src}
-							data-type="image"
-							data-caption={photo.caption}
-							aria-label={`放大查看：${photo.alt}`}
-						>
-							<img
-								src={photo.preview.src}
-								alt={photo.alt}
-								width={photo.preview.width}
-								height={photo.preview.height}
-								loading="lazy"
-								decoding="async"
-							/>
-						</button>
-						<figcaption>
-							<span>{photo.caption}</span>
-							{photo.camera && <em>{photo.camera}</em>}
-						</figcaption>
-					</figure>
-				))
+				childGalleries.length > 0
+					? childGalleries.map((child) => (
+							<a
+								class="photo-card gallery-child-card"
+								href={`/gallery/${child.slug}/`}
+							>
+								<span class="photo-button">
+									{isRemoteImage(child.cover) ? (
+										<img
+											src={child.cover}
+											alt={`${child.title} 封面`}
+											width="1200"
+											height="900"
+											loading="lazy"
+											decoding="async"
+										/>
+									) : (
+										<Image
+											src={child.cover}
+											alt={`${child.title} 封面`}
+											width={640}
+											format="webp"
+											quality={80}
+											loading="lazy"
+											decoding="async"
+										/>
+									)}
+								</span>
+								<span class="gallery-child-body">
+									<strong>{child.title}</strong>
+									<span>{child.description}</span>
+									<em>{child.photos.length} 张照片</em>
+								</span>
+							</a>
+						))
+					: optimizedPhotos.map((photo) => (
+							<figure class="photo-card">
+								<button
+									class="photo-button"
+									type="button"
+									data-fancybox={`gallery-${gallery.slug}`}
+									data-fancybox-no-hash
+									data-src={photo.preview.src}
+									data-type="image"
+									data-caption={photo.caption}
+									aria-label={`放大查看：${photo.alt}`}
+								>
+									<img
+										src={photo.preview.src}
+										alt={photo.alt}
+										width={photo.preview.width}
+										height={photo.preview.height}
+										loading="lazy"
+										decoding="async"
+									/>
+								</button>
+								<figcaption>
+									<span>{photo.caption}</span>
+									{photo.camera && <em>{photo.camera}</em>}
+								</figcaption>
+							</figure>
+						))
 			}
 		</div>
 	</article>
@@ -318,6 +356,39 @@ const optimizedPhotos = await Promise.all(
 		font-style: normal;
 	}
 
+	.gallery-child-card {
+		display: block;
+		transition:
+			transform 220ms ease,
+			border-color 220ms ease;
+	}
+
+	.gallery-child-card:hover {
+		border-color: rgba(188, 226, 255, 0.5);
+		transform: translateY(-4px);
+	}
+
+	.gallery-child-body {
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+		padding: 0.85rem 0.95rem 1rem;
+		color: rgba(238, 248, 255, 0.74);
+		font-size: 0.92rem;
+		line-height: 1.6;
+	}
+
+	.gallery-child-body strong {
+		color: rgba(255, 255, 255, 0.94);
+		font-size: 1.05rem;
+	}
+
+	.gallery-child-body em {
+		color: rgba(202, 230, 255, 0.56);
+		font-size: 0.78rem;
+		font-style: normal;
+	}
+
 	@media (min-width: 720px) {
 		.photo-grid {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -339,6 +410,7 @@ const optimizedPhotos = await Promise.all(
 
 	@media (prefers-reduced-motion: reduce) {
 		.gallery-back-link,
+		.gallery-child-card,
 		.photo-button img {
 			transition: none;
 		}

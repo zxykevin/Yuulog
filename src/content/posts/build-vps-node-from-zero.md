@@ -4,7 +4,7 @@ published: 2026-05-10
 description: 记录一次使用 Vultr 日本 VPS、Ubuntu 22.04、Xray-core 与 VLESS Reality Vision 搭建个人代理节点的完整流程。
 tags: [VPS, Linux, 自建服务, 网络配置, 技术折腾]
 category: 技术笔记
-pinned: true
+pinned: false
 draft: false
 ---
 
