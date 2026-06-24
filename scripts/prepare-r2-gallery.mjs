@@ -104,5 +104,5 @@ console.log(
 );
 console.log("Suggested upload command:");
 console.log(
-	`rclone copy photos/processed/${albumSlug} r2:yuulog-gallery/gallery/${albumSlug} --progress`,
+	`rclone copy photos/processed/${albumSlug} r2:yuulog/gallery/numazu/${albumSlug} --progress`,
 );

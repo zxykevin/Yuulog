@@ -4,7 +4,7 @@
 
 ## R2 配置
 
-- 推荐 Bucket：`yuulog-gallery`
+- 推荐 rclone remote / Bucket：`r2:yuulog`
 - 推荐公开域名：`img.yuulog.org`
 - 推荐路径结构：
 
@@ -37,7 +37,7 @@ pnpm gallery:prepare <album-slug>
 使用配置好的 rclone remote 上传：
 
 ```sh
-rclone copy photos/processed/<album-slug> r2:yuulog-gallery/gallery/<album-slug> --progress
+rclone copy photos/processed/<album-slug> r2:yuulog/gallery/numazu/<album-slug> --progress
 ```
 
 ## 在站点中引用
