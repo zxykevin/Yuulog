@@ -11,7 +11,6 @@ const CACHE_KEYS = {
 const SUMMARY_MAX_AGE = 5 * 60;
 const DETAILS_MAX_AGE = 60 * 60;
 const BASE_MAX_AGE = 5 * 60;
-const CACHE_RETENTION = 7 * 24 * 60 * 60;
 
 const SUMMARY_QUERY = `
 query Summary(
@@ -213,7 +212,14 @@ async function graphql(env, query, variables) {
 }
 
 async function readCache(env, key) {
-	const cached = await env.ANALYTICS_KV.get(key, "json");
+	const raw = await env.ANALYTICS_KV.get(key);
+	let cached;
+	try {
+		cached = raw ? JSON.parse(raw) : null;
+	} catch (error) {
+		console.error(`Invalid cache payload for ${key}`, error);
+		return null;
+	}
 	if (!cached?.updatedAt || !cached?.data) return null;
 	return {
 		data: cached.data,
@@ -224,11 +230,7 @@ async function readCache(env, key) {
 
 async function writeCache(env, key, data) {
 	const updatedAt = new Date().toISOString();
-	await env.ANALYTICS_KV.put(
-		key,
-		JSON.stringify({ data, updatedAt }),
-		{ expirationTtl: CACHE_RETENTION },
-	);
+	await env.ANALYTICS_KV.put(key, JSON.stringify({ data, updatedAt }));
 	return { data, updatedAt, age: 0 };
 }
 
