@@ -11,6 +11,7 @@ const CACHE_KEYS = {
 const SUMMARY_MAX_AGE = 5 * 60;
 const DETAILS_MAX_AGE = 60 * 60;
 const BASE_MAX_AGE = 5 * 60;
+const REFRESH_LOCK_TTL = 2 * 60;
 
 const SUMMARY_QUERY = `
 query Summary(
@@ -239,9 +240,20 @@ async function cachedResult(env, ctx, key, maxAge, refresh) {
 	if (!cached) return withCacheMeta(await refresh(), false);
 	const stale = cached.age > maxAge;
 	if (stale) {
-		ctx.waitUntil(refresh().catch((error) => console.error(`Refresh ${key} failed`, error)));
+		ctx.waitUntil(refreshOnce(env, key, refresh));
 	}
 	return withCacheMeta(cached, stale);
+}
+
+async function refreshOnce(env, key, refresh) {
+	const lockKey = `${key}:refreshing`;
+	if (await env.ANALYTICS_KV.get(lockKey)) return;
+	await env.ANALYTICS_KV.put(lockKey, "1", { expirationTtl: REFRESH_LOCK_TTL });
+	try {
+		await refresh();
+	} catch (error) {
+		console.error(`Refresh ${key} failed`, error);
+	}
 }
 
 function withCacheMeta(entry, stale) {
