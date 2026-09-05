@@ -161,6 +161,13 @@ const { variant = "article", class: className = "", style } = Astro.props;
 		}
 	}
 
+	@media (max-width: 767px) {
+		/* 校正 Stripe iframe 在 iOS Safari 中约 1rem 的右侧视觉留白。 */
+		stripe-buy-button {
+			transform: translateX(-1rem);
+		}
+	}
+
 	@media (max-width: 380px) {
 		.stripe-support {
 			padding: 1rem;
