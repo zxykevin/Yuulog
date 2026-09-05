@@ -21,6 +21,7 @@ export const WIDGET_COMPONENT_MAP = {
 	"site-stats": "../components/widgets/site-stats/SiteStats.astro",
 	"visitor-stats":
 		"../components/features/visitor-stats/VisitorStatsCard.astro",
+	"stripe-support": "../components/payment/StripeSupport.astro",
 	calendar: "../components/widgets/calendar/Calendar.astro",
 	custom: null,
 } as const;

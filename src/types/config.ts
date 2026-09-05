@@ -377,6 +377,7 @@ export type WidgetComponentType =
 	| "pio" // 添加 pio 组件类型
 	| "site-stats" // 站点统计组件
 	| "visitor-stats" // 访客统计组件
+	| "stripe-support" // Stripe 支持卡片
 	| "calendar" // 日历组件
 	| "custom";
 

@@ -482,6 +482,14 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			animationDelay: 100,
 		},
 		{
+			// Stripe 支持卡片：首页与文章侧栏复用同一组件
+			type: "stripe-support",
+			position: "top",
+			class: "onload-animation",
+			animationDelay: 150,
+			customProps: { variant: "sidebar" },
+		},
+		{
 			// 组件类型：侧栏音乐组件
 			type: "music-sidebar",
 			position: "sticky",
@@ -562,12 +570,20 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 
 	// 侧栏组件布局配置
 	components: {
-		left: ["profile", "announcement", "visitor-stats", "tags", "card-toc"],
+		left: [
+			"profile",
+			"announcement",
+			"visitor-stats",
+			"stripe-support",
+			"tags",
+			"card-toc",
+		],
 		right: ["site-stats", "calendar", "categories", "music-sidebar"],
 		drawer: [
 			"profile",
 			"announcement",
 			"visitor-stats",
+			"stripe-support",
 			"music-sidebar",
 			"categories",
 			"tags",

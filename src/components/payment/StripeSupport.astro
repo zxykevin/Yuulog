@@ -1,0 +1,169 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+	variant?: "article" | "sidebar";
+	class?: string;
+	style?: string;
+}
+
+const { variant = "article", class: className = "", style } = Astro.props;
+---
+
+<section
+	class:list={[
+		"stripe-support onload-animation",
+		`stripe-support--${variant}`,
+		className,
+	]}
+	style={style}
+	aria-labelledby={`stripe-support-title-${variant}`}
+>
+	<div class="stripe-support__heading">
+		<div class="stripe-support__icon" aria-hidden="true">
+			<Icon name="material-symbols:favorite-rounded" />
+		</div>
+		<div class="min-w-0">
+			<h2 id={`stripe-support-title-${variant}`}>支持 Yuulog</h2>
+			<p>如果这里的内容对你有帮助，欢迎请我喝杯咖啡。</p>
+		</div>
+	</div>
+
+	<div class="stripe-support__button">
+		<stripe-buy-button
+			buy-button-id="buy_btn_1UBclN2L1btXWynH0LCLrQ2F"
+			publishable-key="pk_live_51U8tCy2L1btXWynH8rBsbUEq0Ugb3r2ZcXfHjzvbDMEWjTpsusY8fLjT7SHvu5n4VJDxedw7509m8T6KdBFLJxvQ00Jy1zQTG5"
+		></stripe-buy-button>
+	</div>
+</section>
+
+<script is:inline>
+	(() => {
+		const scriptId = "stripe-buy-button-script";
+		const hasButton = document.querySelector("stripe-buy-button");
+		if (!hasButton || document.getElementById(scriptId)) return;
+
+		const script = document.createElement("script");
+		script.id = scriptId;
+		script.src = "https://js.stripe.com/v3/buy-button.js";
+		script.async = true;
+		document.head.appendChild(script);
+	})();
+</script>
+
+<style>
+	.stripe-support {
+		position: relative;
+		overflow: hidden;
+		padding: 1.25rem;
+		border-radius: var(--radius-large);
+		background: var(--card-bg);
+		isolation: isolate;
+		transition: background-color 150ms ease;
+	}
+
+	.stripe-support::after {
+		position: absolute;
+		z-index: -1;
+		top: -3.5rem;
+		right: -3.5rem;
+		width: 9rem;
+		height: 9rem;
+		border-radius: 9999px;
+		background: color-mix(in srgb, var(--primary) 13%, transparent);
+		content: "";
+		filter: blur(0.25rem);
+	}
+
+	.stripe-support--article {
+		margin-bottom: 1rem;
+	}
+
+	.stripe-support__heading {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.75rem;
+	}
+
+	.stripe-support__icon {
+		display: grid;
+		width: 2.5rem;
+		height: 2.5rem;
+		flex: none;
+		place-items: center;
+		border-radius: 0.75rem;
+		background: color-mix(in srgb, var(--primary) 14%, transparent);
+		color: var(--primary);
+		font-size: 1.35rem;
+	}
+
+	h2 {
+		margin: 0;
+		color: rgb(23 23 23);
+		font-size: 1.05rem;
+		font-weight: 700;
+		line-height: 1.5;
+	}
+
+	p {
+		margin: 0.2rem 0 0;
+		color: rgb(82 82 82);
+		font-size: 0.875rem;
+		line-height: 1.55;
+	}
+
+	.stripe-support__button {
+		display: flex;
+		min-height: 3rem;
+		align-items: center;
+		justify-content: center;
+		margin-top: 1rem;
+		overflow: hidden;
+	}
+
+	stripe-buy-button {
+		display: block;
+		width: 100%;
+		max-width: 18rem;
+		margin-inline: auto;
+	}
+
+	/* Stripe 的嵌入面板有最小宽度，侧栏中等比缩放以免右侧被裁切。 */
+	.stripe-support--sidebar stripe-buy-button {
+		width: calc(100% / 0.8);
+		max-width: none;
+		zoom: 0.8;
+	}
+
+	:global(.dark) h2 {
+		color: rgb(245 245 245);
+	}
+
+	:global(.dark) p {
+		color: rgb(212 212 212);
+	}
+
+	@media (min-width: 640px) {
+		.stripe-support--article {
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) minmax(12rem, 18rem);
+			align-items: center;
+			gap: 1.25rem;
+			padding: 1.5rem;
+		}
+
+		.stripe-support--article .stripe-support__button {
+			margin-top: 0;
+		}
+	}
+
+	@media (max-width: 380px) {
+		.stripe-support {
+			padding: 1rem;
+		}
+
+		.stripe-support__heading {
+			gap: 0.625rem;
+		}
+	}
+</style>
