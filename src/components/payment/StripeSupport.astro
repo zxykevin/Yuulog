@@ -114,25 +114,20 @@ const { variant = "article", class: className = "", style } = Astro.props;
 
 	.stripe-support__button {
 		display: flex;
+		width: 100%;
 		min-height: 3rem;
 		align-items: center;
 		justify-content: center;
 		margin-top: 1rem;
 		overflow: hidden;
+		text-align: center;
 	}
 
 	stripe-buy-button {
 		display: block;
-		width: 100%;
-		max-width: 18rem;
-		margin-inline: auto;
-	}
-
-	/* Stripe 的嵌入面板有最小宽度，侧栏中等比缩放以免右侧被裁切。 */
-	.stripe-support--sidebar stripe-buy-button {
-		width: calc(100% / 0.8);
-		max-width: none;
-		zoom: 0.8;
+		width: min(100%, 18rem);
+		margin-right: auto;
+		margin-left: auto;
 	}
 
 	:global(.dark) h2 {
@@ -154,6 +149,15 @@ const { variant = "article", class: className = "", style } = Astro.props;
 
 		.stripe-support--article .stripe-support__button {
 			margin-top: 0;
+		}
+	}
+
+	@media (min-width: 768px) {
+		/* Stripe 面板有最小宽度；只在真正的窄侧栏中缩放，移动端保持居中原尺寸。 */
+		.stripe-support--sidebar stripe-buy-button {
+			width: calc(100% / 0.8);
+			max-width: none;
+			zoom: 0.8;
 		}
 	}
 
