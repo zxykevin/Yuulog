@@ -1,4 +1,6 @@
 ---
+import Markdown from "@components/misc/Markdown.astro";
+
 import { formatRelativeTime } from "../../../utils/timeFormat";
 import type { MomentCardProps } from "./types";
 
@@ -6,46 +8,46 @@ const { moment, index, minutesAgo, hoursAgo, daysAgo } =
 	Astro.props as MomentCardProps;
 
 const relativeTime = formatRelativeTime(
-	moment.date,
+	moment.data.published.toISOString(),
 	minutesAgo,
 	hoursAgo,
 	daysAgo,
 );
+
+const { title, images, location, mood, tags } = moment.data;
 ---
 
 <div
 	class="moment-card group relative bg-transparent rounded-xl border border-black/10 dark:border-white/10 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
-	data-tags={moment.tags?.join(",") || ""}
+	data-tags={tags.join(",")}
 >
 	<div class="p-5">
 		{
-			moment.title && (
+			title && (
 				<h2 class="text-lg font-bold text-black/90 dark:text-white/90 mb-2">
-					{moment.title}
+					{title}
 				</h2>
 			)
 		}
 
 		<!-- Content -->
-		<p
-			class="text-sm md:text-base text-black/90 dark:text-white/90 leading-relaxed mb-3"
-		>
-			{moment.content}
-		</p>
+		<Markdown class="diary-markdown text-sm md:text-base mb-3">
+			<slot />
+		</Markdown>
 
 		<!-- Images -->
 		{
-			moment.images && moment.images.length > 0 && (
+			images.length > 0 && (
 				<div
 					class:list={[
 						"diary-images grid gap-2 mb-3",
-						moment.images.length === 1 && "diary-images-single",
-						moment.images.length === 2 && "diary-images-double",
-						moment.images.length === 3 && "diary-images-triple",
-						moment.images.length >= 4 && "diary-images-grid",
+						images.length === 1 && "diary-images-single",
+						images.length === 2 && "diary-images-double",
+						images.length === 3 && "diary-images-triple",
+						images.length >= 4 && "diary-images-grid",
 					]}
 				>
-					{moment.images.map((image, imgIndex) => (
+					{images.map((image, imgIndex) => (
 						<div class="relative rounded-lg overflow-hidden aspect-square cursor-pointer">
 							<a
 								href="javascript:void(0)"
@@ -69,9 +71,9 @@ const relativeTime = formatRelativeTime(
 
 		<!-- Tags -->
 		{
-			moment.tags && moment.tags.length > 0 && (
+			tags.length > 0 && (
 				<div class="flex flex-wrap gap-1.5 mb-3">
-					{moment.tags.map((tag: string) => (
+					{tags.map((tag: string) => (
 						<span class="btn-regular h-6 text-xs px-2 rounded-lg">
 							{tag}
 						</span>
@@ -92,29 +94,25 @@ const relativeTime = formatRelativeTime(
 					icon="material-symbols:schedule"
 					width="14"
 					height="14"></iconify-icon>
-				<time datetime={moment.date}>{relativeTime}</time>
+				<time datetime={moment.data.published.toISOString()}
+					>{relativeTime}</time
+				>
 			</div>
 
 			<div class="flex items-center gap-3">
 				{
-					moment.location && (
+					location && (
 						<span class="flex items-center gap-1">
 							<iconify-icon
 								icon="material-symbols:location-on"
 								width="14"
 								height="14"
 							/>
-							{moment.location}
+							{location}
 						</span>
 					)
 				}
-				{
-					moment.mood && (
-						<span class="flex items-center gap-1">
-							{moment.mood}
-						</span>
-					)
-				}
+				{mood && <span class="flex items-center gap-1">{mood}</span>}
 			</div>
 		</div>
 	</div>
